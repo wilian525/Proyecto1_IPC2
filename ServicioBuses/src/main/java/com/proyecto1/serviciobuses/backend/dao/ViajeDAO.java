@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Time;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Optional;
@@ -84,6 +85,7 @@ public class ViajeDAO {
                                                    UPDATE viaje SET hora_llegada_real = ? , kilometraje_final = ? , gasto_combustible = ?, 
                                                                monto_depreciacion = ? , estado = ?   WHERE viaje_id = ?
                                                    """;
+    public static final String ASIGNAR_RECURSOS = "UPDATE viaje SET bus_id = ?, chofer_id = ? WHERE viaje_id = ? AND tipo = 'PRIVADO' ";
     
     public ViajeDAO(ConexionDB conexiondb){
         this.conexiondb = conexiondb;
@@ -293,6 +295,66 @@ public class ViajeDAO {
         throw new IllegalArgumentException("El viaje debe ser regular  o privado");
     }
     
+    public int insertarYObtenerId(Viaje viaje){
+        Connection con = conexiondb.obtenerConeccion();
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        
+        try {
+            ps = con.prepareStatement(INSERTAR,Statement.RETURN_GENERATED_KEYS);
+            if (viaje.getBus() != null) {
+                    ps.setInt(1, viaje.getBus().getId());
+            } else {
+                  ps.setNull(1, Types.INTEGER);
+            }
+            
+            if (viaje.getChofer() != null) {
+                 ps.setInt(2, viaje.getChofer().getId());
+            } else {
+                ps.setNull(2,Types.INTEGER);
+            }
+            ps.setDate(3, Date.valueOf(viaje.getFechaSalida()));
+            ps.setTime(4,Time.valueOf( viaje.getHoraSalidaProgramada()));
+            ps.setDate(5, Date.valueOf(viaje.getFechaLlegadaEstimada()));
+            ps.setTime(6, Time.valueOf(viaje.getHoraLlegadaEstimada()));
+            ps.setBoolean(7, viaje.isEstado());
+            ps.setString(8, obtenerTipo(viaje));
+            
+            if (ps.executeUpdate() ==0) {
+                 return -1;
+            }
+            rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                 return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            cerrar(rs);
+            cerrar(ps);
+        }
+        return -1;
+    }
+    
+    public boolean asignarRecursos(int viajeId, int busId,int choferId){
+        Connection con = conexiondb.obtenerConeccion();
+        PreparedStatement ps = null;
+        
+        try {
+            ps = con.prepareStatement(ASIGNAR_RECURSOS);
+            ps.setInt(1, busId);
+            ps.setInt(2, choferId);
+            ps.setInt(3, viajeId);
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            cerrar(ps);
+        }
+    }
+    
     private void cerrar(Statement statement) {
 
         if (statement != null) {
@@ -300,7 +362,7 @@ public class ViajeDAO {
                 statement.close();
             } catch (SQLException ex) {
                 ex.printStackTrace();
-            }
+            }  
         }
     }
 
