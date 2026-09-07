@@ -57,7 +57,15 @@ public class ViajePrivadoDAO {
     public static final String BUSCAR_POR_ID = "SELECT * FROM viaje_privado WHERE viaje_id = ?";
     public static final String BUSCAR_POR_ID_USUARIO = "SELECT * FROM viaje_privado WHERE viaje_id = ? AND usuario_id = ? ";
     public static final String CONFIRMAR_ALQUILER = "UPDATE viaje_privado SET precio_confirmado = ? WHERE viaje_id = ? AND estado_alquiler = FALSE" ;
-    public static final String REGISTRAR_PAGO = "UPDATE viaje_privado SET estado_alquiler = TRUE, fecha_pago = ? WHERE viaje_id = ? AND usuario_id = ? AND precio_confirmar IS NOT NULL AND estado_alquiler = FALSE";
+    public static final String REGISTRAR_PAGO = """
+                                                UPDATE viaje_privado "
+                                                        SET estado_alquiler = TRUE, fecha_pago = ? 
+                                                        WHERE viaje_id = ? 
+                                                        AND usuario_id = ? 
+                                                        AND precio_confirmado IS NOT NULL 
+                                                        AND estado_alquiler = FALSE
+                                                """;
+    public static final String ELIMINAR_POR_VIAJE = "DELETE FROM viaje_privado WHERE viaje_id = ? AND estado_alquiler = FALSE";
     
     public ViajePrivadoDAO(ConexionDB conexiondb){
        this.conexiondb = conexiondb;
@@ -110,6 +118,23 @@ public class ViajePrivadoDAO {
           }
     }
     
+    public boolean eliminarPorViaje(int viajeId){
+        Connection con = conexiondb.obtenerConeccion();
+        PreparedStatement ps = null;
+        
+        try {
+            ps = con.prepareStatement(ELIMINAR_POR_VIAJE);
+            ps.setInt(1, viajeId);
+            return ps.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            cerrar(ps);
+        }
+     }
+    
     public Optional<ViajePrivado> buscarPorId(int viajeId){
         Connection con = conexiondb.obtenerConeccion();
         PreparedStatement ps = null;
@@ -144,6 +169,7 @@ public class ViajePrivadoDAO {
             ps = con.prepareStatement(BUSCAR_POR_ID_USUARIO);
             ps.setInt(1, viajeId);
             ps.setInt(2, usuarioId);
+            rs = ps.executeQuery();
             
             if (rs.next()) {
                  viajePrivado = construirViajePrivado(rs);
@@ -175,7 +201,11 @@ public class ViajePrivadoDAO {
         }
     }
     
-    public boolean gistrarPago(int viajeId,int usuarioId, LocalDate fechaPago){
+    public boolean registrarPago(int viajeId,int usuarioId, LocalDate fechaPago){
+            if (viajeId  <= 0 || usuarioId <= 0 || fechaPago == null) {
+                return false;
+        }
+        
         Connection con = conexiondb.obtenerConeccion();
         PreparedStatement ps = null;
         

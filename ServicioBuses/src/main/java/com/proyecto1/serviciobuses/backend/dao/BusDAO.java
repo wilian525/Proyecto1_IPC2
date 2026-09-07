@@ -35,16 +35,11 @@ public class BusDAO {
                                          kilometraje_actual DECIMAL(10,2) NOT NULL,
                                         estado BOOLEAN NOT NULL,
                                              
-                                        CONSTRAINT pk_bus PRIMARY KEY (bus_id),
-                                             
-                                        CONSTRAINT fk_bus_sucursal FOREIGN KEY (sucursal_id) REFERENCES sucursal(sucursal_id),
-                                             
-                                         CONSTRAINT ak_bus_placa UNIQUE (placa),
-                                             
-                                         CONSTRAINT chk_bus_anioCHECK (anio_fabricacion > 0),
-                                             
-                                         CONSTRAINT chk_bus_capacidadCHECK (capacidad > 0),
-                                             
+                                        CONSTRAINT pk_bus PRIMARY KEY (bus_id),                 
+                                        CONSTRAINT fk_bus_sucursal FOREIGN KEY (sucursal_id) REFERENCES sucursal(sucursal_id),                   
+                                         CONSTRAINT ak_bus_placa UNIQUE (placa),              
+                                         CONSTRAINT chk_bus_anioCHECK (anio_fabricacion > 0),                              
+                                         CONSTRAINT chk_bus_capacidadCHECK (capacidad > 0),                                    
                                           CONSTRAINT chk_bus_kilometraje CHECK (kilometraje_actual >= 0)
                                                      )
                                              """;

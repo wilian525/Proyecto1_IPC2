@@ -22,16 +22,16 @@ public class SucursalDAO {
     
     private ConexionDB conexiondb;
     private static final String CREAR_TABLA = """ 
-                                              CREATE TABLE IF NOT EXISTS sucursal(
+                                              CREATE TABLE IF NOT EXISTS sucursal (
                                                     sucursal_id INT AUTO_INCREMENT,
                                                     nombre VARCHAR(100) NOT NULL,
                                                     direccion VARCHAR(200) NOT NULL,
                                                     telefono VARCHAR(20) NOT NULL,
-                                                    CONSTRAINT pk_sucursal PRYMARY KEY (sucursal_id)
+                                                    CONSTRAINT pk_sucursal PRIMARY KEY (sucursal_id)
                                               )
                                               """;
     
-    public static final String INSERTAR = " INSERTAR INTO sucursal (nombre,direccion,telefono) VALUES (?,?,?) ";
+    public static final String INSERTAR = " INSERT INTO sucursal (nombre,direccion,telefono) VALUES (?,?,?) ";
     public static final String ACTUALIZAR = "UPDATE sucursal SET nombre = ?, direccion = ?, telefono = ? WHERE sucursal_id = ? ";
     public static final String BUSCAR_POR_ID = "SELECT * FROM sucursal WHERE sucursal_id = ? ";
     public static final String LISTAR = "SELECT * FROM sucursal ORDER BY nombre";

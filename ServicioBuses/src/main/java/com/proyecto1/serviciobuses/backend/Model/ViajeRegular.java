@@ -10,6 +10,8 @@ package com.proyecto1.serviciobuses.backend.Model;
  */
 public class ViajeRegular extends Viaje {
     
+    private Ruta ruta;
+    
     public ViajeRegular(){
         super();
     }
@@ -18,5 +20,14 @@ public class ViajeRegular extends Viaje {
     public double calcularCosto(){
         return 0;
     }
+
+    public Ruta getRuta() {
+        return ruta;
+    }
+
+    public void setRuta(Ruta ruta) {
+        this.ruta = ruta;
+    }
+    
     
 }

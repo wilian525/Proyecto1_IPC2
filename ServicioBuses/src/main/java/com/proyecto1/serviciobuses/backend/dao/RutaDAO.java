@@ -33,7 +33,7 @@ public class RutaDAO {
            
                        CONSTRAINT pk_ruta PRIMARY KEY (ruta_id),         
                        CONSTRAINT fk_ruta_origen FOREIGN KEY (origen_id)  REFERENCES sucursal(sucursal_id),      
-                       CONSTRAINT fk_ruta_destinoFOREIGN KEY (destino_id) REFERENCES sucursal(sucursal_id), 
+                       CONSTRAINT fk_ruta_destino FOREIGN KEY (destino_id) REFERENCES sucursal(sucursal_id), 
                        CONSTRAINT chk_ruta_distancia  CHECK (distancia_km > 0),         
                        CONSTRAINT chk_ruta_precio CHECK (precio_boleto >= 0),       
                        CONSTRAINT chk_ruta_origen_destino CHECK (origen_id <> destino_id)
@@ -85,6 +85,30 @@ public class RutaDAO {
 
         } catch (SQLException ex) {
             ex.printStackTrace();
+            return false;
+        } finally {
+            cerrar(ps);
+        }
+    }
+    
+    public boolean actualizar(Ruta ruta){
+        if (ruta == null || ruta.getOrigen() == null || ruta.getDestino() == null || ruta.getId() <= 0) {
+            return false;
+        }
+        Connection con = conexiondb.obtenerConeccion();
+        PreparedStatement ps = null;
+        
+        try {
+            ps = con.prepareStatement(ACTUALIZAR);
+            ps.setInt(1, ruta.getOrigen().getId());
+            ps.setInt(2, ruta.getDestino().getId());
+            ps.setDouble(3, ruta.getDistanciaKilometraje());
+            ps.setDouble(4, ruta.getPrecioBoleto());
+            ps.setInt(5, ruta.getId());
+            
+            return ps.executeUpdate() > 0;
+        } catch (SQLException e) {
+            e.printStackTrace();
             return false;
         } finally {
             cerrar(ps);

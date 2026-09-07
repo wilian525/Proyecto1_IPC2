@@ -32,17 +32,14 @@ public class ChoferDAO {
                      salario_base_por_viaje DECIMAL(10,2) NOT NULL,
                      estado BOOLEAN NOT NULL,
                                               
-                     CONSTRAINT pk_chofer PRIMARY KEY (usuario_id),
-                                              
-                    CONSTRAINT fk_chofer_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(usuario_id),
-                                              
-                    CONSTRAINT ak_chofer_licencia UNIQUE (numero_licencia),
-                                              
+                     CONSTRAINT pk_chofer PRIMARY KEY (usuario_id),                          
+                    CONSTRAINT fk_chofer_usuario FOREIGN KEY (usuario_id) REFERENCES usuario(usuario_id),                                
+                    CONSTRAINT ak_chofer_licencia UNIQUE (numero_licencia),                                
                     CONSTRAINT chk_chofer_salario CHECK (salario_base_por_viaje >= 0)
                                                       )                                     
                                               """;
     private static final String INSERTAR_USUARIO = """
-                                                   INSERTAR INTO usuario (nombre,nit,dpi,telefono,direccion,username,password,estado,rol,sucursal_id)
+                                                   INSERT INTO usuario (nombre,nit,dpi,telefono,direccion,username,password,estado,rol,sucursal_id)
                                                    VALUES (?,?,?,?,?,?,?,?, 'CHOFER', ?) 
                                                    """;
     private static final String INSERTAR_CHOFER = """

@@ -155,7 +155,7 @@ public class AlquilerServicio {
             }
             
             con.commit();
-            return false;
+            return true;
             
         } catch (SQLException | RuntimeException e) {
             rollback(con);
@@ -208,7 +208,7 @@ public class AlquilerServicio {
                    return false;
             }
               // verifica alquiler pagado
-              boolean pagoRegistrado = viajePrivadoDao.gistrarPago(viajeId,usuarioId,fechaPago);
+              boolean pagoRegistrado = viajePrivadoDao.registrarPago(viajeId,usuarioId,fechaPago);
               
               if (!pagoRegistrado) {
                    con.rollback();

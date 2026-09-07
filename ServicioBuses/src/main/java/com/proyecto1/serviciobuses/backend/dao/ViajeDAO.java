@@ -32,8 +32,8 @@ public class ViajeDAO {
     public static final String CREAR_TABLA = """
         CREATE TABLE IF NOT EXISTS viaje (
             viaje_id INT AUTO_INCREMENT,
-            bus_id INT NOT NULL,
-            chofer_id INT NOT NULL,
+            bus_id INT,
+            chofer_id INT,
             fecha_salida DATE NOT NULL,
             hora_salida_programada TIME NOT NULL,
             fecha_llegada_estimada DATE NOT NULL,
@@ -48,24 +48,13 @@ public class ViajeDAO {
             tipo VARCHAR(20) NOT NULL,
 
             CONSTRAINT pk_viaje PRIMARY KEY (viaje_id),
-
             CONSTRAINT fk_viaje_bus FOREIGN KEY (bus_id) REFERENCES bus(bus_id),
-
             CONSTRAINT fk_viaje_chofer FOREIGN KEY (chofer_id) REFERENCES chofer(usuario_id),
-
             CONSTRAINT chk_viaje_tipo CHECK (tipo IN ('REGULAR', 'PRIVADO')),
-
-            CONSTRAINT chk_viaje_km_inicial
-                CHECK ( kilometraje_inicial IS NULL OR kilometraje_inicial >= 0 ),
-
-            CONSTRAINT chk_viaje_km_final
-                CHECK (kilometraje_final IS NULLOR kilometraje_final >= 0),
-
-            CONSTRAINT chk_viaje_combustible
-                CHECK (gasto_combustible IS NULL OR gasto_combustible >= 0 ),
-
-            CONSTRAINT chk_viaje_depreciacion
-                CHECK (monto_depreciacion IS NULL OR monto_depreciacion >= 0 )
+            CONSTRAINT chk_viaje_km_inicial CHECK ( kilometraje_inicial IS NULL OR kilometraje_inicial >= 0 ),
+            CONSTRAINT chk_viaje_km_final CHECK (kilometraje_final IS NULLOR kilometraje_final >= 0),
+            CONSTRAINT chk_viaje_combustible CHECK (gasto_combustible IS NULL OR gasto_combustible >= 0 ),
+            CONSTRAINT chk_viaje_depreciacion  CHECK (monto_depreciacion IS NULL OR monto_depreciacion >= 0 )
         )
         """;
     
@@ -86,6 +75,7 @@ public class ViajeDAO {
                                                                monto_depreciacion = ? , estado = ?   WHERE viaje_id = ?
                                                    """;
     public static final String ASIGNAR_RECURSOS = "UPDATE viaje SET bus_id = ?, chofer_id = ? WHERE viaje_id = ? AND tipo = 'PRIVADO' ";
+    public static final String ELIMINAR = "DELETE FROM viaje WHERE viaje_id = ? AND hora_salida_real IS NULL";
     
     public ViajeDAO(ConexionDB conexiondb){
         this.conexiondb = conexiondb;
@@ -153,6 +143,23 @@ public class ViajeDAO {
             e.printStackTrace();
             return false;
         } finally{
+            cerrar(ps);
+        }
+    }
+    
+    public boolean eliminar(int viajeId){
+        Connection con = conexiondb.obtenerConeccion();
+        PreparedStatement ps = null;
+        
+        try {
+            ps = con.prepareStatement(ELIMINAR);
+            ps.setInt(1, viajeId);
+            return ps.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
             cerrar(ps);
         }
     }
@@ -256,12 +263,21 @@ public class ViajeDAO {
     private Viaje construirViaje(ResultSet rs) throws SQLException{
         Viaje viaje = new Viaje();
         viaje.setId(rs.getInt("viaje_id"));
-         Bus bus = new Bus();
-        bus.setId(rs.getInt("bus_id"));
-        Chofer chofer = new Chofer();
-        chofer.setId(rs.getInt("chofer_id"));
-         viaje.setBus(bus);
-        viaje.setChofer(chofer);
+        int busId = rs.getInt("bus_id");
+        
+        if (!rs.wasNull()) {
+              Bus bus = new Bus();
+              bus.setId(rs.getInt("bus_id"));
+               viaje.setBus(bus);
+        }
+        
+        int choferId = rs.getInt("chofer_id");
+        if (!rs.wasNull()) {
+             Chofer chofer = new Chofer();
+             chofer.setId(rs.getInt("chofer_id"));
+              viaje.setChofer(chofer);
+        }
+        
 
         viaje.setFechaSalida( rs.getDate("fecha_salida").toLocalDate());
         viaje.setHoraSalidaProgramada(rs.getTime( "hora_salida_programada" ).toLocalTime() );

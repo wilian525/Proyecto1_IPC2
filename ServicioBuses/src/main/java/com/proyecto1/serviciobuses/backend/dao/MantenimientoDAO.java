@@ -31,6 +31,7 @@ public class MantenimientoDAO {
                                                     monto_repuesto DECIMAL(10,2) NOT NULL,
                                                     CONSTRAINT pk_mantenimiento PRIMARY KEY (mantenimiento_id),
                                                     CONSTRAINT fk_mantenimiento_bus FOREIGN KEY (bus_id) REFERENCES bus(bus_id),
+                                                    CONSTRAINT fk_mantenimiento_mano_obra CHECK (monto_mano_obra >= 0 ),
                                                     CONSTRAINT chk_mantenimiento_repuestos CHECK (monto_repuesto >= 0)
                                                )
                                               """ ;
@@ -41,7 +42,7 @@ public class MantenimientoDAO {
         """;
     
      private static final String LISTAR_POR_BUS = """
-        SELECT * FROM mantenimientoWHERE bus_id = ? ORDER BY fecha DESC
+        SELECT * FROM mantenimiento WHERE bus_id = ? ORDER BY fecha DESC
         """;
      
      public MantenimientoDAO(ConexionDB conexiondb){
@@ -97,7 +98,8 @@ public class MantenimientoDAO {
              
              while(rs.next()){
                  Mantenimiento mantenimiento = new Mantenimiento();
-                 mantenimiento.setId(rs.getInt("bus_id"));
+                 mantenimiento.setId(rs.getInt("mantenimiento_id"));
+                 mantenimiento.setBusId(rs.getInt("bus_id"));
                  mantenimiento.setFecha(rs.getDate("fecha").toLocalDate());
                  mantenimiento.setMontoManoObra(rs.getDouble("monto_mano_obra"));
                  mantenimiento.setMontoRepuesto(rs.getDouble("monto_repuestos"));

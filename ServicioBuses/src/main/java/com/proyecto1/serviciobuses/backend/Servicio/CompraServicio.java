@@ -8,10 +8,12 @@ import com.proyecto1.serviciobuses.backend.Conexion.ConexionDB;
 import com.proyecto1.serviciobuses.backend.Model.Boleto;
 import com.proyecto1.serviciobuses.backend.Model.Ruta;
 import com.proyecto1.serviciobuses.backend.Model.Viaje;
+import com.proyecto1.serviciobuses.backend.Model.ViajeRegular;
 import com.proyecto1.serviciobuses.backend.dao.BoletoDAO;
 import com.proyecto1.serviciobuses.backend.dao.CarteraDAO;
 import com.proyecto1.serviciobuses.backend.dao.RutaDAO;
 import com.proyecto1.serviciobuses.backend.dao.ViajeDAO;
+import com.proyecto1.serviciobuses.backend.dao.ViajeRegularDAO;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -31,11 +33,13 @@ public class CompraServicio {
    private RutaDAO rutaDao;
    private BoletoDAO boletoDao;
    private CarteraDAO carteraDao;
+   private ViajeRegularDAO viajeRegularDAO;
    
    public CompraServicio(ConexionDB conexiondb){
        this.conexiondb = conexiondb;
        
        this.viajeDao = new ViajeDAO(conexiondb);
+       this.viajeRegularDAO = new ViajeRegularDAO(conexiondb);
        this.rutaDao = new RutaDAO(conexiondb);
        this.boletoDao = new BoletoDAO(conexiondb);
        this.carteraDao = new CarteraDAO(conexiondb);
@@ -66,26 +70,19 @@ public class CompraServicio {
            con.setAutoCommit(false);
            
            //verifica viaje exista
-           Optional<Viaje> resultadoViaje = viajeDao.buscarPorId(viajeId);
-           if (resultadoViaje.isEmpty()) {
+           Optional<ViajeRegular> resultadoRegular = viajeRegularDAO.buscarPorViaje(viajeId);
+           if (resultadoRegular.isEmpty() || resultadoRegular.get().getRuta() == null) {
                     con.rollback();
                     return false;
            }
-           Viaje viaje = resultadoViaje.get();
-           
-           // si bus ya inicio viaje no se puede comprar boleto 
-           if (viaje.getHoraSalidaReal() != null) {
-                    con.rollback();
-                    return false;
-           }   
-                    // obtener ruta y valida si existe viaje regular
-                    Optional<Ruta> resultadoRuta = rutaDao.buscarPorViajeRegular(viajeId);
+             // obtener ruta y valida si existe viaje regular
+                    Optional<Ruta> resultadoRuta = rutaDao.buscarPorId(resultadoRegular.get().getRuta().getId());
                     
                     if (resultadoRuta.isEmpty()) {
                         con.rollback();
                         return false;
-               }
-                    
+               } 
+                         
                     Ruta ruta = resultadoRuta.get();
                     double precioBoleto = ruta.getPrecioBoleto();
                     double totalCompra = precioBoleto * asientosCompra.size();
