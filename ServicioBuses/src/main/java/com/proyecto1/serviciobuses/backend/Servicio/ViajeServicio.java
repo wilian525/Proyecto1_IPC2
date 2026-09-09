@@ -176,7 +176,7 @@ public class ViajeServicio {
             }
              
              // no se pudo registrar una llegada dos veces
-             if (viaje.getHoraLlegadaReal() == null) {
+             if (viaje.getHoraLlegadaReal() != null) {
                     con.rollback();
                     return false;
             }
@@ -207,11 +207,10 @@ public class ViajeServicio {
                  return false;
             }
              
-             double kilometrajeRecorrido = kilometraje - viaje.getKilometrajeInicial();
-             double depreciacion = kilometrajeRecorrido * configuracion.getMontoPorKilometraje();
+            viaje.setKilometrajeFinal(kilometraje);
+           double depreciacion = viaje.calcularDepreciacion( configuracion.getMontoPorKilometraje());
              
              viaje.setHoraLlegadaReal(horaLlegadaReal);
-             viaje.setKilometrajeFinal(kilometraje);
              viaje.setGastoCombustible(gastoCombustible);
              viaje.setMontoDepreciacion(depreciacion);
              
@@ -231,7 +230,7 @@ public class ViajeServicio {
             }
              
              con.commit();
-             return false;
+             return true;
              
         } catch (SQLException | RuntimeException  e) {
             rollback(con);

@@ -52,7 +52,7 @@ public class ViajeDAO {
             CONSTRAINT fk_viaje_chofer FOREIGN KEY (chofer_id) REFERENCES chofer(usuario_id),
             CONSTRAINT chk_viaje_tipo CHECK (tipo IN ('REGULAR', 'PRIVADO')),
             CONSTRAINT chk_viaje_km_inicial CHECK ( kilometraje_inicial IS NULL OR kilometraje_inicial >= 0 ),
-            CONSTRAINT chk_viaje_km_final CHECK (kilometraje_final IS NULLOR kilometraje_final >= 0),
+            CONSTRAINT chk_viaje_km_final CHECK (kilometraje_final IS NULL OR kilometraje_final >= 0),
             CONSTRAINT chk_viaje_combustible CHECK (gasto_combustible IS NULL OR gasto_combustible >= 0 ),
             CONSTRAINT chk_viaje_depreciacion  CHECK (monto_depreciacion IS NULL OR monto_depreciacion >= 0 )
         )
@@ -65,16 +65,16 @@ public class ViajeDAO {
                                           """;
     public static final String ACTUALIZAR = """
                                             UPDATE viaje SET bus_id = ?, chofer_id = ? , fecha_salida = ? , hora_salida_programada = ?,
-                                            fecha_llegada_estimada = ?, hora_llegada_estimada = ?, estado = ? WHERE viaje_id = ?
+                                            fecha_llegada_estimada = ?, hora_llegada_estimada = ?, estado = ? WHERE viaje_id = ? AND hora_salida_real IS NULL
                                             """;
     public static final String BUSCAR_POR_ID = "SELECT * FROM viaje WHERE viaje_id = ? ";
     public static final String LISTAR =  " SELECT * FROM viaje ORDER BY fecha_salida, hora_salida_programada ";
-    public static final String  REGISTRAR_SALIDA = "UPDATE viaje  SET hora_salida_real = ?, kilometraje_inicial = ?, estado = ? WHERE viaje_id = ?";
+    public static final String  REGISTRAR_SALIDA = "UPDATE viaje  SET hora_salida_real = ?, kilometraje_inicial = ?, estado = ? WHERE viaje_id = ? AND hora_salida_real IS NULL AND hora_llegada_real IS NULL";
     public static final String REGISTRAR_LLEGADA = """
                                                    UPDATE viaje SET hora_llegada_real = ? , kilometraje_final = ? , gasto_combustible = ?, 
-                                                               monto_depreciacion = ? , estado = ?   WHERE viaje_id = ?
+                                                               monto_depreciacion = ? , estado = ?   WHERE viaje_id = ? AND hora_salida_real IS NOT NULL AND hora_llegada_real IS NULL
                                                    """;
-    public static final String ASIGNAR_RECURSOS = "UPDATE viaje SET bus_id = ?, chofer_id = ? WHERE viaje_id = ? AND tipo = 'PRIVADO' ";
+    public static final String ASIGNAR_RECURSOS = "UPDATE viaje SET bus_id = ?, chofer_id = ?  WHERE viaje_id = ? AND tipo = 'PRIVADO' AND hora_salida_real IS NULL ";
     public static final String ELIMINAR = "DELETE FROM viaje WHERE viaje_id = ? AND hora_salida_real IS NULL";
     
     public ViajeDAO(ConexionDB conexiondb){
@@ -97,28 +97,10 @@ public class ViajeDAO {
     }
     
     public boolean insertar(Viaje viaje){
-        Connection con = conexiondb.obtenerConeccion();
-        PreparedStatement ps = null;
-        
-        try {
-            ps = con.prepareStatement(INSERTAR);
-             ps.setInt(1, viaje.getBus().getId());
-            ps.setInt(2, viaje.getChofer().getId());
-            ps.setDate(3, Date.valueOf(viaje.getFechaSalida()));
-            ps.setTime( 4, Time.valueOf(viaje.getHoraSalidaProgramada()));
-            ps.setDate(5, Date.valueOf(viaje.getFechaLlegadaEstimada()) );
-            ps.setTime(6,Time.valueOf(viaje.getHoraLlegadaEstimada()) );
-            ps.setBoolean(7, viaje.isEstado());
-            ps.setString(8, obtenerTipo(viaje));
-
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        } finally {
-            cerrar(ps);
+        if (viaje == null) {
+             return false;
         }
+        return insertarYObtenerId(viaje) > 0;
     }
     
     public boolean actualizar(Viaje viaje){
@@ -128,8 +110,17 @@ public class ViajeDAO {
         try {
             ps = con.prepareStatement(ACTUALIZAR);
 
-            ps.setInt(1, viaje.getBus().getId());
-            ps.setInt(2, viaje.getChofer().getId());
+            if (viaje.getBus() != null) {
+                    ps.setInt(1, viaje.getBus().getId());
+            } else {
+                  ps.setNull(1, Types.INTEGER);
+            }
+            if (viaje.getChofer() != null) {
+                 ps.setInt(2, viaje.getChofer().getId());
+            } else {
+                  ps.setNull(2, Types.INTEGER);
+            }
+            
             ps.setDate(3,Date.valueOf(viaje.getFechaSalida()) );
             ps.setTime(4, Time.valueOf(viaje.getHoraSalidaProgramada()));
             ps.setDate( 5,Date.valueOf(viaje.getFechaLlegadaEstimada()) );

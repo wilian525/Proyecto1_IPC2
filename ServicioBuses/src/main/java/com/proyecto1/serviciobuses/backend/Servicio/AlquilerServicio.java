@@ -63,7 +63,7 @@ public class AlquilerServicio {
         }
          
          double precioEstimado = alquiler.calcularCosto();
-         if (precioEstimado < 0) {
+         if (precioEstimado <= 0) {
              return false;
         }
          alquiler.setPrecioEstimado(precioEstimado);

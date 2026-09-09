@@ -54,6 +54,9 @@ public class UsuarioDAO {
      private static final String BUSCAR_POR_USERNAME = "SELECT * FROM usuario WHERE username = ?";
      private static final String LISTAR = "SELECT * FROM usuario ORDER BY nombre";
      private static final String CAMBIAR_ESTADO = "UPDATE usuario SET estado = ? WHERE usuario_id = ?";
+     private static final String CONTAR_ADMIN_SISTEMA_ACTIVO = "SELECT COUNT(*) AS total FROM usuario WHERE rol = 'ADMIN_SISTEMA' AND estado = TRUE";
+     private static final String CONTAR_ADMIN_SUCURSAL_ACTIVOS = "SELECT COUNT(*) AS total FROM usuario WHERE rol = 'ADMIN_SUCURSAL' AND sucursal_id = ? AND estado = TRUE";
+     private static final String ACTUALIZAR_PERFIL ="UPDATE usuario SET nombre = ?, nit = ? , dpi = ? , telefono = ? , direccion = ? WHERE usuario_id = ? ";
      
      public UsuarioDAO(ConexionDB conexiondb){
          this.conexiondb = conexiondb;
@@ -75,43 +78,7 @@ public class UsuarioDAO {
      }
      
      public boolean insertar(Usuario usuario){
-            if (usuario == null) {
-                  return false;
-         }
-            String rol = obtenerRol(usuario);
-            
-            if (rol == null) {
-             return false;
-         }
-         
-         Connection con = conexiondb.obtenerConeccion();
-         PreparedStatement ps = null;
-         
-         try {
-              ps = con.prepareStatement(INSERTAR);
-
-        ps.setString(1, usuario.getNombre());
-        ps.setString(2, usuario.getNit());
-        ps.setString(3, usuario.getDpi());
-        ps.setString(4, usuario.getTelefono());
-        ps.setString(5, usuario.getDireccion());
-        ps.setString(6, usuario.getUserName());
-        ps.setString(7, usuario.getPassword());
-        ps.setBoolean(8, usuario.isEstado());
-        ps.setString(9, rol);
-            
-             if (usuario.getSucursalId() != null) {
-                  ps.setInt(10, usuario.getSucursalId());
-             } else {
-                 ps.setNull(10, Types.INTEGER);
-             }
-             return ps.executeUpdate() > 0;
-         } catch (SQLException e) {
-             e.printStackTrace();
-             return false;
-         }  finally{
-             cerrar(ps);
-         }
+          return insertarYObtenerId(usuario) > 0;
      }
      
      public boolean actualizar(Usuario usuario){
@@ -291,7 +258,7 @@ public class UsuarioDAO {
           
           Usuario usuario = null;
           
-          if ("ADMIN_SISTEMAS".equals(rol)) {
+          if ("ADMIN_SISTEMA".equals(rol)) {
              usuario = new AdministradorSistemas(id,nombre,nit, dpi,telefono,direccion,username,password,estado);
          } else if("ADMIN_SUCURSAL".equals(rol)){
              usuario = new AdministradorSucursal(id,nombre,nit,dpi,telefono,direccion,username,password,estado);  
@@ -324,6 +291,123 @@ public class UsuarioDAO {
           return usuario;
      }
      
+     public int contarAdministradoresSistemasActivos(){
+         Connection con  = conexiondb.obtenerConeccion();
+         PreparedStatement ps = null;
+         ResultSet rs = null;
+         
+         try {
+             ps = con.prepareStatement(CONTAR_ADMIN_SISTEMA_ACTIVO);
+             rs = ps.executeQuery();
+             if (rs.next()) {
+                  return rs.getInt("total");
+             }
+            
+         } catch (SQLException e) {
+             e.printStackTrace();
+         } finally {
+             cerrar(rs);
+             cerrar(ps);
+         }
+         return 0;
+     }
+     
+     public int contarAdministradorSucursalActivos(int sucursalId){
+         if (sucursalId <= 0) {
+              return 0;
+         }
+         Connection con =  conexiondb.obtenerConeccion();
+         PreparedStatement ps = null;
+         ResultSet rs = null;
+         
+         try {
+             ps = con.prepareStatement(CONTAR_ADMIN_SUCURSAL_ACTIVOS);
+             ps.setInt(1, sucursalId);
+             rs = ps.executeQuery();
+             if (rs.next()) {
+                  return rs.getInt("total");
+             }
+         } catch (SQLException e) {
+             e.printStackTrace();
+         } finally {
+             cerrar(rs);
+             cerrar(ps);
+         }
+         return 0;
+     }
+     
+     public int insertarYObtenerId(Usuario usuario){
+         if (usuario == null) {
+              return -1;
+         }
+         String rol = obtenerRol(usuario);
+         Connection con = conexiondb.obtenerConeccion();
+         PreparedStatement ps = null;
+         ResultSet rs = null;
+         
+         try {
+             ps = con.prepareStatement(INSERTAR,Statement.RETURN_GENERATED_KEYS);
+             ps.setString(1, usuario.getNombre());
+             ps.setString(2, usuario.getNit());
+             ps.setString(3, usuario.getDpi() );
+             ps.setString( 4,usuario.getTelefono());
+             ps.setString( 5,usuario.getDireccion());
+             ps.setString(6, usuario.getUserName());
+              ps.setString( 7,usuario.getPassword());
+            ps.setBoolean( 8, usuario.isEstado());
+            ps.setString(9, rol);
+            
+             if (usuario.getSucursalId() != null) {
+                  ps.setInt(10, usuario.getSucursalId());
+             } else {
+                 ps.setNull(10, Types.INTEGER);
+             }
+             
+             if (ps.executeUpdate() == 0) {
+                  return -1;
+             }
+             
+             rs = ps.getGeneratedKeys();
+             if (rs.next()) {
+                 return rs.getInt(1);
+             }
+         } catch (SQLException e) {
+             e.printStackTrace();
+         } finally {
+             cerrar(rs);
+             cerrar(ps);
+         }
+         return -1;
+     }
+     
+     public boolean actualizarPerfil(Usuario usuario){
+         if (usuario == null || usuario.getId() <= 0) {
+           return false;
+    }
+
+    Connection con = conexiondb.obtenerConeccion();
+    PreparedStatement ps = null;
+
+    try {
+        ps = con.prepareStatement(ACTUALIZAR_PERFIL );
+        ps.setString(1,  usuario.getNombre());
+        ps.setString(2, usuario.getNit());
+        ps.setString(  3, usuario.getDpi());
+        ps.setString(4, usuario.getTelefono());
+        ps.setString(5, usuario.getDireccion());
+        ps.setInt(  6, usuario.getId());
+
+        return ps.executeUpdate() > 0;
+
+    } catch (SQLException e) {
+
+        e.printStackTrace();
+        return false;
+
+    } finally {
+        cerrar(ps);
+    }
+     }
      private void cerrar(Statement statement) {
 
         if (statement != null) {

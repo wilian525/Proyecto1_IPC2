@@ -26,20 +26,18 @@ public class CarteraDAO {
                            usuario_id INT NOT NULL,
                            saldo DECIMAL(10,2) NOT NULL DEFAULT 0,
                                              
-                           CONSTRAINT pk_cartera  PRIMARY KEY (cartera_id),
-                                             
+                           CONSTRAINT pk_cartera  PRIMARY KEY (cartera_id),                                            
                             CONSTRAINT fk_cartera_usuario FOREIGN KEY (usuario_id)
-                               REFERENCES usuario(usuario_id),
-                                             
-                              CONSTRAINT ak_cartera_usuario UNIQUE (usuario_id),
-                                             
-                              CONSTRAINT chk_cartera_saldo CHECK (saldo >= 0)
+                            REFERENCES usuario(usuario_id),                    
+                            CONSTRAINT ak_cartera_usuario UNIQUE (usuario_id),                                            
+                            CONSTRAINT chk_cartera_saldo CHECK (saldo >= 0)
                                 )                                
                               """;
     public static final String INSERTAR = " INSERT INTO cartera_digital (usuario_id, saldo) VALUES (?, ? ) ";
     public static final String BUSCAR_POR_USUARIO = "SELECT * FROM cartera_digital WHERE usuario_id = ? ";
     public static final String ACTUALIZAR_SALDO = "UPDATE cartera_digital SET saldo = ? WHERE usuario_id = ? ";
     public static final String DESCONTAR_SALDO = "UPDATE cartera_digital SET saldo = saldo - ? WHERE usuario_id = ? AND saldo >= ? ";
+    public static final String RECARGAR_SALDO = "UPDATE cartera_digital SET saldo = saldo + ? WHERE usuario_id = ?";
     
     public CarteraDAO(ConexionDB conexiondb){
         this.conexiondb = conexiondb;
@@ -78,7 +76,7 @@ public class CarteraDAO {
     }
     
     public boolean descontarSaldo(int usuarioId, double monto){
-        if (usuarioId <= 0 || monto < 0) {
+        if (usuarioId <= 0 || monto <= 0) {
                 return false;
         }
         
@@ -135,6 +133,27 @@ public class CarteraDAO {
             ps.setInt(2, usuarioId);
             
             return ps.executeUpdate() > 0 ;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        } finally {
+            cerrar(ps);
+        }
+    }
+    
+    public boolean recargarSaldo(int usuarioId, double monto){
+        if (usuarioId <= 0 || monto <= 0) {
+             return false;
+        }
+        Connection con = conexiondb.obtenerConeccion();
+        PreparedStatement ps = null;
+        
+        try {
+            ps = con.prepareStatement(RECARGAR_SALDO);
+            ps.setDouble(1, monto);
+            ps.setInt(2, usuarioId);
+            return ps.executeUpdate() > 0;
             
         } catch (SQLException e) {
             e.printStackTrace();

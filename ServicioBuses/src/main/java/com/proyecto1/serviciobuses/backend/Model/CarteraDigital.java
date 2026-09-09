@@ -19,11 +19,13 @@ public class CarteraDigital {
     }
     
     public void recargar(double monto){
-        saldo +=  monto;
+       if (monto > 0) {
+        saldo += monto;
+    }
     }
     
     public boolean descontar( double monto){
-            if (tieneSaldo(monto)) {
+            if ( monto > 0 && tieneSaldo(monto)) {
                    saldo -= monto;
                    return true;
             }

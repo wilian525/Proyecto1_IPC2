@@ -13,6 +13,8 @@ import java.time.LocalTime;
  */
 public class ViajePrivado extends Viaje{
     
+    public static final double TARIFA_POR_PASAJERO = 50.00;
+    
     private String origen;
     private String destino;
     private LocalDate fechaRetorno;
@@ -38,15 +40,26 @@ public class ViajePrivado extends Viaje{
         this.fechaPago = fechaPago;
     }
     
-    @Override
-      public double calcularCosto() {
-        return 0;
-    }
-
     public double calcularSalarioChofer() {
+          if (getChofer() == null) {
         return 0;
     }
+    return getChofer().getSalarioBasePorViaje() * 1.15;
+    }
 
+    public double calcularCosto() {
+        if (numeroPasajeros <= 0) {
+            return 0;
+        }
+
+    double costo = numeroPasajeros * TARIFA_POR_PASAJERO;
+    if (fechaRetorno != null) {
+        costo = costo * 2;
+    }
+
+    return costo;
+}
+    
     public String getOrigen() {
         return origen;
     }

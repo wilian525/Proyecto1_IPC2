@@ -15,11 +15,6 @@ public class ViajeRegular extends Viaje {
     public ViajeRegular(){
         super();
     }
-    
-    @Override
-    public double calcularCosto(){
-        return 0;
-    }
 
     public Ruta getRuta() {
         return ruta;

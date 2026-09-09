@@ -69,6 +69,9 @@ public class ChoferDAO {
                                                  ORDER BY u.nombr
                                          """;
     private static final String CAMBIAR_ESTADO = "UPDATE chofer SET estado = ? WHERE usuario_id = ? ";
+    private static final String CAMBIAR_ESTADO_USUARIO = "UPDATE usuario SET estado = ? WHERE usuario_id = ? AND rol = 'CHOFER ' ";
+    private static final String CAMBIAR_ESTADO_CHOFER  = "UPDATE chofer SET estado = ? WHERE usuario_id = ? ";
+    private static final String INSERTAR_CARTERA = "INSERT INTO cartera_digital (usuario_id, saldo) VALUES (?,0)";
     
     public ChoferDAO (ConexionDB conexiondb){
         this.conexiondb = conexiondb;
@@ -93,6 +96,7 @@ public class ChoferDAO {
             return false;
         }
         Connection con = conexiondb.obtenerConeccion();
+        PreparedStatement carteraPs = null;
         PreparedStatement usuarioPs = null;
         PreparedStatement choferPs = null;
         ResultSet claves = null;
@@ -137,10 +141,21 @@ public class ChoferDAO {
             choferPs.setDouble(6, chofer.getSalarioBasePorViaje() );
             choferPs.setBoolean( 7, chofer.isEstado() );
 
+            carteraPs = con.prepareStatement (INSERTAR_CARTERA);
+            carteraPs.setInt(1, usuarioId);
+            
+             if (carteraPs.executeLargeUpdate() == 0) {
+                  con.rollback();
+                  return false;
+             }
             if (choferPs.executeUpdate() == 0) {
                 con.rollback();
                 return false;
             }
+            
+             if (chofer == null || chofer.getSucursalId() == null || chofer.getSucursalId() <= 0) {
+                  return false;
+             }
 
             con.commit();
 
@@ -267,21 +282,56 @@ public class ChoferDAO {
     }
     
     public boolean cambiarEstado(int id,boolean estado){
-        Connection con = conexiondb.obtenerConeccion();
-        PreparedStatement ps = null;
-        
-        try {
-            ps = con.prepareStatement(CAMBIAR_ESTADO);
-            ps.setBoolean(1, estado);
-            ps.setInt(2, id);
-         
-            return ps.executeUpdate() > 0;
-        } catch (SQLException e) {
-            e.printStackTrace();
+        if (id <= 0) {
+        return false;
+    }
+    Connection con = conexiondb.obtenerConeccion();
+    if (con == null) {
+        return false;
+    }
+
+    PreparedStatement usuarioPs = null;
+    PreparedStatement choferPs = null;
+    boolean autoCommitAnterior = true;
+
+    try {
+        autoCommitAnterior = con.getAutoCommit();
+        con.setAutoCommit(false);
+
+        usuarioPs = con.prepareStatement(CAMBIAR_ESTADO_USUARIO);
+
+        usuarioPs.setBoolean(1, estado);
+        usuarioPs.setInt(2, id);
+
+        if (usuarioPs.executeUpdate() == 0) {
+            con.rollback();
             return false;
-        } finally {
-            cerrar(ps);
         }
+
+        choferPs = con.prepareStatement(CAMBIAR_ESTADO_CHOFER);
+
+        choferPs.setBoolean(1, estado);
+        choferPs.setInt(2, id);
+
+        if (choferPs.executeUpdate() == 0) {
+            con.rollback();
+            return false;
+        }
+
+        con.commit();
+        return true;
+
+    } catch (SQLException e) {
+        rollback(con);
+        e.printStackTrace();
+        return false;
+
+    } finally {
+        cerrar(choferPs);
+        cerrar(usuarioPs);
+
+        restauraAutoCommit(con,autoCommitAnterior );
+    }
     }
     
     private Chofer construirChofer(ResultSet rs) throws SQLException {

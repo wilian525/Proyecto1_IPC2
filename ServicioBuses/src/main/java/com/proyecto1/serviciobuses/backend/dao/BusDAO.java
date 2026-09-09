@@ -30,7 +30,7 @@ public class BusDAO {
                                        placa VARCHAR(20) NOT NULL,
                                        marca VARCHAR(50) NOT NULL,
                                         modelo VARCHAR(50) NOT NULL,
-                                        año_fabricacion SMALLINT NOT NULL,
+                                        anio_fabricacion SMALLINT NOT NULL,
                                          capacidad INT NOT NULL,
                                          kilometraje_actual DECIMAL(10,2) NOT NULL,
                                         estado BOOLEAN NOT NULL,
@@ -38,8 +38,8 @@ public class BusDAO {
                                         CONSTRAINT pk_bus PRIMARY KEY (bus_id),                 
                                         CONSTRAINT fk_bus_sucursal FOREIGN KEY (sucursal_id) REFERENCES sucursal(sucursal_id),                   
                                          CONSTRAINT ak_bus_placa UNIQUE (placa),              
-                                         CONSTRAINT chk_bus_anioCHECK (anio_fabricacion > 0),                              
-                                         CONSTRAINT chk_bus_capacidadCHECK (capacidad > 0),                                    
+                                         CONSTRAINT chk_bus_anio CHECK (anio_fabricacion > 0),                              
+                                         CONSTRAINT chk_bus_capacidad CHECK (capacidad > 0),                                    
                                           CONSTRAINT chk_bus_kilometraje CHECK (kilometraje_actual >= 0)
                                                      )
                                              """;
@@ -54,7 +54,7 @@ public class BusDAO {
                                             """;
     public static final String BUSCAR_POR_ID = "SELECT * FROM bus WHERE bus_id = ? ";
     public static final String LISTAR = "SELECT * FROM bus ORDER BY placa";
-    public static final String DESACTIVAR = "UPDATE bus SET estado = FALSE WHERE bus_id = ? ";
+    public static final String DESACTIVAR = "UPDATE bus b SET  estado = FALSE WHERE b.bus_id = ? AND NOT EXISTS(SELECT 1 FROM viaje v WHERE v.bus_id = b.bus_id AND v.hora_llegada_real IS NULL)";
     
     public BusDAO(ConexionDB conexiondb){
         this.conexiondb = conexiondb;
@@ -171,7 +171,7 @@ public class BusDAO {
             e.printStackTrace();
         } finally{
             cerrar(rs);
-            cerrar(rs);
+            cerrar(ps);
         }
         return bus;
     }

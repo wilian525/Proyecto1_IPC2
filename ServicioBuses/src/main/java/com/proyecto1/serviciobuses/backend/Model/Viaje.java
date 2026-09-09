@@ -40,22 +40,15 @@ public class Viaje {
         this.gastoCombustible = gastoCombustible;
         this.estado = estado;
     }
-    
-    public void registrarSalida() {
-
-    }
-
-    public void registrarLlegada() {
-
-    }
-
-    public double calcularDepreciacion() {
+   
+public double calcularDepreciacion(double montoPorKilometro) {
+    if (montoPorKilometro < 0|| kilometrajeFinal < kilometrajeInicial) {
         return 0;
     }
+    double kilometrosRecorridos = kilometrajeFinal - kilometrajeInicial;
 
-    public double calcularCosto() {
-        return 0;
-    }
+    return kilometrosRecorridos * montoPorKilometro;
+}
 
     public int getId() {
         return id;

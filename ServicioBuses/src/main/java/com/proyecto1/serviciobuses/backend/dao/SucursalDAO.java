@@ -57,24 +57,7 @@ public class SucursalDAO {
     }
 
     public boolean insertar(Sucursal sucursal) {
-        Connection conexion = conexiondb.obtenerConeccion();
-        PreparedStatement ps = null;
-
-        try {
-            ps = conexion.prepareStatement(INSERTAR);
-            
-            ps.setString(1, sucursal.getNombre());
-            ps.setString(2, sucursal.getDireccion());
-            ps.setString(3, sucursal.getTelefono());
-
-            return ps.executeUpdate() > 0;
-
-        } catch (SQLException ex) {
-            ex.printStackTrace();
-            return false;
-        } finally {
-            cerrar(ps);
-        }
+       return insertarYObtenerId(sucursal) > 0;
     }
 
     public boolean actualizar(Sucursal sucursal) {
@@ -151,6 +134,40 @@ public class SucursalDAO {
     private Sucursal construirSucursal(ResultSet rs)throws SQLException {
         return new Sucursal( rs.getInt("sucursal_id"), rs.getString("nombre"), rs.getString("direccion"), rs.getString("telefono"));
     }
+    
+    public int insertarYObtenerId( Sucursal sucursal) {
+    if (sucursal == null) {
+        return -1;
+    }
+    Connection con =conexiondb.obtenerConeccion();
+    PreparedStatement ps = null;
+    ResultSet rs = null;
+
+    try {
+
+        ps = con.prepareStatement(INSERTAR,Statement.RETURN_GENERATED_KEYS );
+        ps.setString( 1, sucursal.getNombre());
+        ps.setString( 2, sucursal.getDireccion());
+        ps.setString(3,sucursal.getTelefono());
+
+        if (ps.executeUpdate() == 0) {
+            return -1;
+        }
+
+        rs = ps.getGeneratedKeys();
+        if (rs.next()) {
+            return rs.getInt(1);
+        }
+
+    } catch (SQLException e) {
+        e.printStackTrace();
+
+    } finally {
+        cerrar(rs);
+        cerrar(ps);
+    }
+    return -1;
+}
 
     private void cerrar(Statement statement) {
         if (statement != null) {
