@@ -19,7 +19,7 @@ public class Bus {
     private int capacidad;
     private double kilometrajeActual;
     private boolean estado;
-    private int sucursalId;
+    private Integer sucursalId;
     
     public Bus(){
     
@@ -121,7 +121,7 @@ public class Bus {
         this.estado = estado;
     }
 
-    public int getSucursalId() {
+    public Integer getSucursalId() {
         return sucursalId;
     }
 

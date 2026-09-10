@@ -16,6 +16,7 @@ public class ViajePrivado extends Viaje{
     public static final double TARIFA_POR_PASAJERO = 50.00;
     
     private String origen;
+    private int usuarioId;
     private String destino;
     private LocalDate fechaRetorno;
     private int numeroPasajeros;
@@ -122,6 +123,14 @@ public class ViajePrivado extends Viaje{
 
     public void setFechaPago(LocalDate fechaPago) {
         this.fechaPago = fechaPago;
+    }
+
+    public int getUsuarioId() {
+        return usuarioId;
+    }
+
+    public void setUsuarioId(int usuarioId) {
+        this.usuarioId = usuarioId;
     }
     
     
