@@ -121,7 +121,7 @@ public class UsuarioServlet extends HttpServlet {
         
         request.setCharacterEncoding("UTF-8");
         
-        String accion = ServletUtil.accion(request);
+        String accion = ServletUtil.accion(request,"");
         
         try {
             

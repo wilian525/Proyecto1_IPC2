@@ -9,6 +9,8 @@ import com.proyecto1.serviciobuses.backend.Model.AdministradorSucursal;
 import com.proyecto1.serviciobuses.backend.Model.Usuario;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 /**
  *
@@ -46,5 +48,44 @@ public class ServletUtil {
             return valor.trim();
     }
     
-    public int entero()
+    public int entero(HttpServletRequest request, String parametro) {
+        return Integer.parseInt(texto(request,parametro));
+    }
+    
+    public Integer enteroOpcional(  HttpServletRequest request,String parametro){
+            String valor = texto(request,parametro);
+            if (valor.isBlank()) {
+                    return null;
+        }
+            return Integer.valueOf(valor);
+    }
+    
+    public double decimal(HttpServletRequest request,String parametro){
+        return Double.parseDouble(texto(request,parametro));
+    }
+    
+    public LocalDate fecha(HttpServletRequest request, String parametro){
+            return LocalDate.parse(texto(request,parametro));
+    }
+    
+    public LocalDate fechaOpcional(HttpServletRequest request,String parametro){
+            String valor = texto(request,parametro);
+                if (valor.isBlank()) {
+                     return null;
+        }
+                return LocalDate.parse(valor);
+        }
+    
+     public  LocalTime hora( HttpServletRequest request, String parametro) {
+        return LocalTime.parse( texto(request, parametro));
+    }
+
+     
+    public  String accion(HttpServletRequest request,String accionDefault) {
+        String accion =texto(request, "accion");
+        if (accion.isBlank()) {
+            return accionDefault;
+        }
+        return accion;
+    }
 }
