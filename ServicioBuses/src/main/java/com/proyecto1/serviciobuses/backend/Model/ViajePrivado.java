@@ -24,6 +24,7 @@ public class ViajePrivado extends Viaje{
     private double precioConfirmado;
     private boolean estadoAlquiler;
     private LocalDate fechaPago;
+    private int sucursalId;
     
     public ViajePrivado() {
         super();
@@ -131,6 +132,14 @@ public class ViajePrivado extends Viaje{
 
     public void setUsuarioId(int usuarioId) {
         this.usuarioId = usuarioId;
+    }
+
+    public int getSucursalId() {
+        return sucursalId;
+    }
+
+    public void setSucursalId(int sucursalId) {
+        this.sucursalId = sucursalId;
     }
     
     
