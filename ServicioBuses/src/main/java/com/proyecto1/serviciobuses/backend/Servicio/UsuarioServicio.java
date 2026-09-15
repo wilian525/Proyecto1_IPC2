@@ -32,6 +32,7 @@ public class UsuarioServicio {
         this.conexiondb = conexiondb; 
         this.usuarioDao = new UsuarioDAO(conexiondb);
         this.choferDao = new ChoferDAO(conexiondb);
+        this.carteraDao = new CarteraDAO(conexiondb);
     }
     
     public boolean cambiarEstado(int usuarioId, boolean estado){

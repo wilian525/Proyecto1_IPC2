@@ -36,7 +36,7 @@ import java.util.Collection;
 @WebServlet(name = "AlquilerServlet", urlPatterns = {"/AlquilerServlet"})
 public class AlquilerServlet extends HttpServlet {
 
-    private ServletUtil servletUtil;
+    private ServletUtil servletUtil = new ServletUtil();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -53,7 +53,7 @@ public class AlquilerServlet extends HttpServlet {
  
         Usuario usuario = servletUtil.obtenerUsuario(request);
         if (usuario == null) {
-              response.sendRedirect(request.getContextPath() + "/auth");
+              response.sendRedirect(request.getContextPath() + "/AutenticacionServlet");
               return;
         }
         ConexionDB conexiondb = new ConexionDB();
@@ -85,7 +85,7 @@ public class AlquilerServlet extends HttpServlet {
         
         Usuario usuario = servletUtil.obtenerUsuario(request);
         if (usuario == null) {
-               response.sendRedirect(request.getContextPath() + "/auth");
+               response.sendRedirect(request.getContextPath() + "/AutenticacionServlet");
                return;
         }
         String accion = servletUtil.accion(request, "");
@@ -119,10 +119,10 @@ public class AlquilerServlet extends HttpServlet {
                 }
             }
 
-            response.sendRedirect(request.getContextPath() + "/alquileres?resultado="+ resultado );
+            response.sendRedirect(request.getContextPath() + "/AlquilerServlet?resultado="+ resultado );
 
         } catch (RuntimeException e) {
-            response.sendRedirect(request.getContextPath() + "/alquileres?resultado=false");
+            response.sendRedirect(request.getContextPath() + "/AlquilerServlet?resultado=false");
         } finally {
             conexiondb.cerrar();
         }
@@ -167,7 +167,7 @@ public class AlquilerServlet extends HttpServlet {
                 return false;
         }
          Bus bus = new BusDAO(conexiondb).buscarPorId(busId).orElse(null);
-         Chofer chofer = new ChoferDAO(conexiondb).buscarPorId(busId).orElse(null);
+         Chofer chofer = new ChoferDAO(conexiondb).buscarPorId(choferId).orElse(null);
          
          if (bus == null || chofer == null || usuario.getSucursalId() == null || bus.getSucursalId() != usuario.getSucursalId()|| chofer.getSucursalId() == null|| chofer.getSucursalId()!= usuario.getSucursalId()) {
             return false;

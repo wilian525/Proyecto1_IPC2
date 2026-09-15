@@ -33,7 +33,7 @@ import java.util.Collection;
 @WebServlet(name = "BoletoServlet", urlPatterns = {"/BoletoServlet"})
 public class BoletoServlet extends HttpServlet {
 
-    private ServletUtil servletUtil;
+    private ServletUtil servletUtil = new ServletUtil();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -50,7 +50,7 @@ public class BoletoServlet extends HttpServlet {
      
         Usuario usuario = servletUtil.obtenerUsuario(request);
         if (usuario == null) {
-              response.sendRedirect(request.getContextPath() + "/auth");
+              response.sendRedirect(request.getContextPath() + "/AutenticacionServlet");
               return;
         }
         ConexionDB conexiondb = new ConexionDB();
@@ -84,7 +84,7 @@ public class BoletoServlet extends HttpServlet {
         
         Usuario usuario = servletUtil.obtenerUsuario(request);
         if (usuario == null) {
-               response.sendRedirect(request.getContextPath() + "/auth");
+               response.sendRedirect(request.getContextPath() + "/AutenticacionServlet");
                return;
         }
          try {
@@ -101,12 +101,12 @@ public class BoletoServlet extends HttpServlet {
                
                try {
                    boolean resultado = new CompraServicio(conexiondb).compraBoletos(usuario.getId(), viajeId, asientos, servletUtil.fecha(request, "fechaPago"));
-                   response.sendRedirect(request.getContextPath() +"/boletos?viajeId=" + viajeId + "&resultado=" + resultado);
+                   response.sendRedirect(request.getContextPath() +"/BoletoServlet?viajeId=" + viajeId + "&resultado=" + resultado);
              } finally {
                    conexiondb.cerrar();
              }
         } catch (RuntimeException e) {
-            response.sendRedirect(request.getContextPath() + "/boleto?resultado=false");
+            response.sendRedirect(request.getContextPath() + "/BoletoServlet?resultado=false");
         }
     }
 

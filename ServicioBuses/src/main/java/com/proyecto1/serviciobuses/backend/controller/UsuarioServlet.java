@@ -5,13 +5,15 @@
 package com.proyecto1.serviciobuses.backend.controller;
 
 import com.proyecto1.serviciobuses.backend.Conexion.ConexionDB;
+import com.proyecto1.serviciobuses.backend.Model.AdministradorSistemas;
+import com.proyecto1.serviciobuses.backend.Model.AdministradorSucursal;
 import com.proyecto1.serviciobuses.backend.Model.CarteraDigital;
+import com.proyecto1.serviciobuses.backend.Model.Chofer;
 import com.proyecto1.serviciobuses.backend.Model.Cliente;
 import com.proyecto1.serviciobuses.backend.Model.Usuario;
 import com.proyecto1.serviciobuses.backend.Servicio.UsuarioServicio;
 import com.proyecto1.serviciobuses.backend.dao.CarteraDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -26,33 +28,7 @@ import java.util.Optional;
 @WebServlet(name = "UsuarioServlet", urlPatterns = {"/UsuarioServlet"})
 public class UsuarioServlet extends HttpServlet {
     
-    private ServletUtil ServletUtil;
-
-    /**
-     * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
-     * methods.
-     *
-     * @param request servlet request
-     * @param response servlet response
-     * @throws ServletException if a servlet-specific error occurs
-     * @throws IOException if an I/O error occurs
-     */
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        response.setContentType("text/html;charset=UTF-8");
-        try (PrintWriter out = response.getWriter()) {
-            /* TODO output your page here. You may use following sample code. */
-            out.println("<!DOCTYPE html>");
-            out.println("<html>");
-            out.println("<head>");
-            out.println("<title>Servlet UsuarioServlet</title>");
-            out.println("</head>");
-            out.println("<body>");
-            out.println("<h1>Servlet UsuarioServlet at " + request.getContextPath() + "</h1>");
-            out.println("</body>");
-            out.println("</html>");
-        }
-    }
+    private ServletUtil ServletUtil =  new ServletUtil();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -66,7 +42,7 @@ public class UsuarioServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+        
         
         String accion = ServletUtil.accion(request,"inicio");
         
@@ -77,7 +53,7 @@ public class UsuarioServlet extends HttpServlet {
         Usuario usuario = ServletUtil.obtenerUsuario(request);
         
         if (usuario == null) {
-                response.sendRedirect(request.getContextPath() + "/auth");
+                response.sendRedirect(request.getContextPath() + "/AutenticacionServlet");
                 return ;
         }
         
@@ -103,7 +79,11 @@ public class UsuarioServlet extends HttpServlet {
             }
                 return;
         }
-        request.getRequestDispatcher("/WEB-INF/vistas/inicio.jsp");
+        request.setAttribute("rol", usuario instanceof AdministradorSistemas ? "ADMIN_SISTEMA"
+                    : usuario instanceof AdministradorSucursal ? "ADMIN_SUCURSAL"
+                    : usuario instanceof Chofer ? "CHOFER" : "CLIENTE");
+        
+        request.getRequestDispatcher("/WEB-INF/vistas/inicio.jsp").forward(request, response);
     }
 
     /**
@@ -117,7 +97,7 @@ public class UsuarioServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        processRequest(request, response);
+       
         
         request.setCharacterEncoding("UTF-8");
         
@@ -133,7 +113,7 @@ public class UsuarioServlet extends HttpServlet {
             Usuario usuario = ServletUtil.obtenerUsuario(request);
             
             if (usuario == null) {
-                    response.sendRedirect(request.getContextPath() + "/auth");
+                    response.sendRedirect(request.getContextPath() + "/AutenticacionServlet");
                     return;
             }
             
@@ -146,10 +126,10 @@ public class UsuarioServlet extends HttpServlet {
                  return;
             }
             
-            response.sendRedirect(request.getContextPath() + "/usuario?accion=inicio");
+            response.sendRedirect(request.getContextPath() + "/UsuarioServlet?accion=inicio");
             
         } catch (RuntimeException e) {
-            response.sendRedirect(request.getContextPath() + "/usuario?accion=inicio" + "&resultado=false");
+            response.sendRedirect(request.getContextPath() + "/UsuarioServlet?accion=inicio" + "&resultado=false");
         }
     }
 
@@ -171,7 +151,7 @@ public class UsuarioServlet extends HttpServlet {
                  request.getRequestDispatcher("/WEB-INF/vistas/registro.jsp").forward(request, response);
                  return;
             }
-             response.sendRedirect(request.getContextPath() + "/auth?registro=ok");
+             response.sendRedirect(request.getContextPath() + "/AutenticacionServlet?registro=ok");
              
         } finally {
             conexiondb.cerrar();
@@ -200,7 +180,7 @@ public class UsuarioServlet extends HttpServlet {
             if (!resultado) {
                   usuario.actualizarPerfil(nombreAnterior, nitAnterior, dpiAnterior, telefonoAnterior, direccionAnterior);
             }
-            response.sendRedirect(request.getContextPath() + "/usuario?accion=perfin" + "&resultado=" + resultado);
+            response.sendRedirect(request.getContextPath() + "/UsuarioServlet?accion=perfil" + "&resultado=" + resultado);
         } finally {
             conexiondb.cerrar();
         }
@@ -218,20 +198,10 @@ public class UsuarioServlet extends HttpServlet {
         try {
              CarteraDAO carteraDao = new CarteraDAO(conexiondb);
              boolean resultado = carteraDao.recargarSaldo(usuario.getId(),monto);
-             response.sendRedirect(request.getContextPath() + "/usuario?accion=cartera" + "&resultado=" + resultado);
+             response.sendRedirect(request.getContextPath() + "/UsuarioServlet?accion=cartera" + "&resultado=" + resultado);
         } finally {
             conexiondb.cerrar();
         }
     }
-    
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+ 
 }

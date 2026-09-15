@@ -31,7 +31,7 @@ import java.util.Collection;
 @WebServlet(name = "FlotaServlet", urlPatterns = {"/FlotaServlet"})
 public class FlotaServlet extends HttpServlet {
 
-    private ServletUtil servletUtil;
+    private ServletUtil servletUtil =  new ServletUtil();
   
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
@@ -138,7 +138,7 @@ public class FlotaServlet extends HttpServlet {
                       }
                  } else if ("mantenimiento".equals(accion)) {
                        resultado = registrarMantenimiento(request,usuario,conexiondb);
-                       response.sendRedirect(request.getContextPath() + "/flota?resultado=" + resultado);
+                       response.sendRedirect(request.getContextPath() + "/FlotaServlet?resultado=" + resultado);
                  }
         }finally {
                  conexiondb.cerrar();
@@ -279,14 +279,5 @@ public class FlotaServlet extends HttpServlet {
     private boolean esAdministradorValido(Usuario usuario){
             return usuario instanceof AdministradorSucursal && usuario.getSucursalId() != null;
     }
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
-
+   
 }

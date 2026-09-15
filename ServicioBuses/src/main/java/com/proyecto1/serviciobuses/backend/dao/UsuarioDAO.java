@@ -72,6 +72,7 @@ public class UsuarioDAO {
              
          } catch (SQLException e) {
              e.printStackTrace();;
+             System.out.println("fallo de crear tabla");
          } finally {
              cerrar(statement);
          }
@@ -155,6 +156,10 @@ public class UsuarioDAO {
          }
          
          Connection con = conexiondb.obtenerConeccion();
+         if (con == null) {
+              System.out.println("la conexion biene null");
+              return null;
+         }
          PreparedStatement ps = null;
          ResultSet rs = null;
          

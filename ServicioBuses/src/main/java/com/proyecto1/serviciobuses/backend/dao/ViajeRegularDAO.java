@@ -29,7 +29,7 @@ public class ViajeRegularDAO {
                 ruta_id INT NOT NULL,
                 CONSTRAINT pk_viaje_regular PRIMARY KEY (viaje_id),
                 CONSTRAINT fk_viaje_regular_viaje  FOREIGN KEY (viaje_id) REFERENCES viaje(viaje_id),
-                CONSTRAINT fk_viaje_regular_rutaFOREIGN KEY (ruta_id) REFERENCES ruta(ruta_id)
+                CONSTRAINT fk_viaje_regular_ruta FOREIGN KEY (ruta_id) REFERENCES ruta(ruta_id)
             )
             """;
     private static final String INSERTAR = "INSERT INTO viaje_regular (viaje_id, ruta_id) VALUES (?, ?)";

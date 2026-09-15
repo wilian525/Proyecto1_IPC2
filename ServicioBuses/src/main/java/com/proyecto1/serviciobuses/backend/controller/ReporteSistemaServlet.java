@@ -25,7 +25,7 @@ import java.time.LocalDate;
 @WebServlet(name = "ReporteSistemaServlet", urlPatterns = {"/ReporteSistemaServlet"})
 public class ReporteSistemaServlet extends HttpServlet {
 
-  private ServletUtil servletUtil;
+  private ServletUtil servletUtil = new ServletUtil();
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**

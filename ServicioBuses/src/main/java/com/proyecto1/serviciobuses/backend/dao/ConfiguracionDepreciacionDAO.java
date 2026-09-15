@@ -20,6 +20,7 @@ import java.sql.Statement;
 public class ConfiguracionDepreciacionDAO {
     
    private ConexionDB conexiondb;
+   
    public static final String CREAR_TABLA  = """
         CREATE TABLE IF NOT EXISTS configuracion_depreciacion (
             configuracion_id INT AUTO_INCREMENT,

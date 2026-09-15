@@ -35,7 +35,7 @@ import java.util.Collection;
 @WebServlet(name = "ViajesServlet", urlPatterns = {"/ViajesServlet"})
 public class ViajesServlet extends HttpServlet {
 
-    private ServletUtil servletUtil;
+    private ServletUtil servletUtil = new ServletUtil();
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
     /**
      * Handles the HTTP <code>GET</code> method.
@@ -68,7 +68,7 @@ public class ViajesServlet extends HttpServlet {
                 if ("viaje".equals(accion)) {
                      request.setAttribute("viajes", viajesSucursal(conexiondb,usuario.getSucursalId()));
              }
-                request.getRequestDispatcher("/WEB-INF/visitas/sucursal/viajes.jsp").forward(request, response);
+                request.getRequestDispatcher("/WEB-INF/vistas/sucursal/viajes.jsp").forward(request, response);
         } finally {
              conexiondb.cerrar();
         }
@@ -127,9 +127,9 @@ public class ViajesServlet extends HttpServlet {
                         resultado = new ViajeServicio(conexiondb).eliminarViaje(viajeId);
                  }
             }
-             response.sendRedirect(request.getContextPath() + "/viajes?resultado=" + resultado);
+             response.sendRedirect(request.getContextPath() + "/ViajesServlet?resultado=" + resultado);
         } catch (RuntimeException e) {
-            response.sendRedirect(request.getContextPath() + "/viajes?resultado=false");
+            response.sendRedirect(request.getContextPath() + "/ViajesServlet?resultado=false");
         } finally {
              conexiondb.cerrar();
         }
