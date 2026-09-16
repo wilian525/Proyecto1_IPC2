@@ -18,6 +18,7 @@ import com.proyecto1.serviciobuses.backend.dao.ChoferDAO;
 import com.proyecto1.serviciobuses.backend.dao.RutaDAO;
 import com.proyecto1.serviciobuses.backend.dao.SucursalDAO;
 import com.proyecto1.serviciobuses.backend.dao.ViajeDAO;
+import com.proyecto1.serviciobuses.backend.dao.ViajeRegularDAO;
 import java.io.IOException;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -26,6 +27,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  *
@@ -214,21 +216,48 @@ public class ViajesServlet extends HttpServlet {
             return bus != null && bus.getSucursalId() == sucursalId;
     }
     
-    private Collection<Viaje> viajesSucursal(ConexionDB conexiondb,int sucursalId){
-          Collection<Viaje> resultado = new ArrayList<>();
-          
-          for(Viaje viaje : new ViajeDAO(conexiondb).listar()){
-                 if (viaje.getBus() == null) {
-                      continue;
-              }
-                 Bus bus = new BusDAO(conexiondb).buscarPorId(viaje.getBus().getId()).orElse(null);
-                 if (bus != null && bus.getSucursalId() == sucursalId) {
-                     viaje.setBus(bus);
-                     resultado.add(viaje);
-              }
-          }
-          return resultado;
+private Collection<Viaje> viajesSucursal(ConexionDB conexiondb, int sucursalId) {
+    Collection<Viaje> resultado = new ArrayList<>();
+
+    ViajeDAO viajeDao = new ViajeDAO(conexiondb);
+    BusDAO busDao = new BusDAO(conexiondb);
+    ViajeRegularDAO viajeRegularDao = new ViajeRegularDAO(conexiondb);
+
+    for (Viaje viaje : viajeDao.listar()) {
+
+        if (viaje.getBus() == null) {
+            continue;
+        }
+
+        Bus bus = busDao.buscarPorId(viaje.getBus().getId()).orElse(null);
+
+        if (bus == null || bus.getSucursalId() != sucursalId) {
+            continue;
+        }
+
+        viaje.setBus(bus);
+
+        Optional<ViajeRegular> regular = viajeRegularDao.buscarPorViaje(viaje.getId());
+
+        if (regular.isPresent()) {
+
+            ViajeRegular viajeRegular = regular.get();
+
+            viajeRegular.setId(viaje.getId());
+            viajeRegular.setBus(viaje.getBus());
+            viajeRegular.setChofer(viaje.getChofer());
+            viajeRegular.setEstado(viaje.isEstado());
+
+            resultado.add(viajeRegular);
+
+        } else {
+
+            resultado.add(viaje);
+        }
     }
+
+    return resultado;
+}
     
     private Collection<Bus> busesSucursal(ConexionDB conexionDb,int sucursalId){
           Collection<Bus> resultado = new ArrayList<>();
