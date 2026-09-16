@@ -20,7 +20,6 @@ import com.proyecto1.serviciobuses.backend.dao.SucursalDAO;
 import com.proyecto1.serviciobuses.backend.dao.ViajeDAO;
 import com.proyecto1.serviciobuses.backend.dao.ViajePrivadoDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -51,24 +50,47 @@ public class AlquilerServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
  
-        Usuario usuario = servletUtil.obtenerUsuario(request);
-        if (usuario == null) {
-              response.sendRedirect(request.getContextPath() + "/AutenticacionServlet");
-              return;
+         Usuario usuario = servletUtil.obtenerUsuario(request);
+
+    if (usuario == null) {
+        response.sendRedirect(
+                request.getContextPath() + "/AutenticacionServlet"
+        );
+        return;
+    }
+
+    ConexionDB conexiondb = new ConexionDB();
+    try {
+        request.setAttribute( "sucursales",new SucursalDAO(conexiondb).listar());
+        request.setAttribute( "alquileres",obtenerAlquileres(request, usuario, conexiondb) );
+        // Indicarle al JSP si el usuario es Administrador de Sucursal
+        boolean esAdministradorSucursal = servletUtil.esAdministradorSucursal(request);
+        request.setAttribute(
+                "esAdministradorSucursal",
+                esAdministradorSucursal
+        );
+
+        // Datos que solamente necesita el Administrador de Sucursal
+        if (esAdministradorSucursal && usuario.getSucursalId() != null) {
+
+            request.setAttribute(
+                    "buses",
+                    busesSucursal(
+                            conexiondb,
+                            usuario.getSucursalId()
+                    )
+            );
+
+            request.setAttribute("choferes",choferesSucursal(conexiondb,
+                            usuario.getSucursalId()
+                    )
+            );
         }
-        ConexionDB conexiondb = new ConexionDB();
-        try {
-             request.setAttribute("sucursales", new SucursalDAO(conexiondb).listar());
-             request.setAttribute("alquileres", obtenerAlquileres(request,usuario,conexiondb));
-             
-             if (servletUtil.esAdministradorSucursal(request ) && usuario.getSucursalId() != null) {
-                   request.setAttribute("buses", busesSucursal(conexiondb,usuario.getSucursalId()));
-                   request.setAttribute("choferes", choferesSucursal(conexiondb,usuario.getSucursalId())); 
-            }
-                    request.getRequestDispatcher("/WEB-INF/vistas/alquileres.jsp").forward(request, response);
-        } finally {
-            conexiondb.cerrar();
-        }
+        request.getRequestDispatcher("/WEB-INF/vistas/alquileres.jsp"  ).forward(request, response);
+
+    } finally {
+        conexiondb.cerrar();
+    }
     }
 
     /**
@@ -137,6 +159,7 @@ public class AlquilerServlet extends HttpServlet {
         }
           ViajePrivado alquiler = new ViajePrivado();
          
+          alquiler.setSucursalId(sucrsalId);
           alquiler.setOrigen(servletUtil.texto(request, "origen"));
           alquiler.setDestino(servletUtil.texto(request, "destino"));
           alquiler.setFechaSalida(servletUtil.fecha( request,"fechaSalida"));

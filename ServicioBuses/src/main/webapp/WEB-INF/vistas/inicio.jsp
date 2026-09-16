@@ -144,7 +144,7 @@
                                     <i class="bi bi-ticket-perforated"></i>
                                     Boletos
                                 </a>
-                                <a href="${pageContext.servletContext.contextPath}/alquileres"
+                                <a href="${pageContext.servletContext.contextPath}/AlquilerServlet"
                                    class="btn btn-primary">
                                     <i class="bi bi-bus-front"></i>
                                     Alquileres

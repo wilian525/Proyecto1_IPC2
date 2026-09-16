@@ -51,14 +51,18 @@ public class ViajePrivadoDAO {
                                                          )                                    
                                              """;
     public static final String INSERTAR = """
-                                          INSERT INTO viaje_privado (viaje_id, usuario_id, origen, destino, fecha_retorno, numero_pasajeros, precio_estimado, precio_confirmado, estado_alquiler , fecha_pago)
-                                          VALUES (?,?,?,?,?,?,?, NULL, FALSE, NULL)
-                                          """;
+    INSERT INTO viaje_privado
+    (viaje_id, usuario_id, sucursal_id, origen, destino, fecha_retorno,
+     numero_pasajeros, precio_estimado, precio_confirmado,
+     estado_alquiler, fecha_pago)
+    VALUES (?,?,?,?,?,?,?, ?, NULL, FALSE, NULL)
+    """;
+                                        
     public static final String BUSCAR_POR_ID = "SELECT * FROM viaje_privado WHERE viaje_id = ?";
     public static final String BUSCAR_POR_ID_USUARIO = "SELECT * FROM viaje_privado WHERE viaje_id = ? AND usuario_id = ? ";
     public static final String CONFIRMAR_ALQUILER = "UPDATE viaje_privado SET precio_confirmado = ? WHERE viaje_id = ? AND estado_alquiler = FALSE" ;
     public static final String REGISTRAR_PAGO = """
-                                                UPDATE viaje_privado "
+                                                UPDATE viaje_privado 
                                                         SET estado_alquiler = TRUE, fecha_pago = ? 
                                                         WHERE viaje_id = ? 
                                                         AND usuario_id = ? 
@@ -95,18 +99,19 @@ public class ViajePrivadoDAO {
           
           try {
             ps = con.prepareStatement(INSERTAR);
-            ps.setInt(1, viajeId);
-            ps.setInt(2, usuarioId);
-            ps.setString(3, viajePrivado.getOrigen());
-            ps.setString(4, viajePrivado.getDestino());
+           ps.setInt(1, viajeId);
+           ps.setInt(2, usuarioId);
+           ps.setInt(3, viajePrivado.getSucursalId());
+          ps.setString(4, viajePrivado.getOrigen());
+           ps.setString(5, viajePrivado.getDestino());
             
               if (viajePrivado.getFechaRetorno() != null) {
-                   ps.setDate(5, Date.valueOf(viajePrivado.getFechaRetorno()));
+                   ps.setDate(6, Date.valueOf(viajePrivado.getFechaRetorno()));
               } else {
-                  ps.setNull(5, Types.DATE);
+                  ps.setNull(6, Types.DATE);
               }
-              ps.setInt( 6, viajePrivado.getNumeroPasajeros());
-             ps.setDouble(7,viajePrivado.getPrecioEstimado());
+              ps.setInt( 7, viajePrivado.getNumeroPasajeros());
+             ps.setDouble(8,viajePrivado.getPrecioEstimado());
 
             return ps.executeUpdate() > 0;
       
@@ -227,6 +232,8 @@ public class ViajePrivadoDAO {
     private ViajePrivado construirViajePrivado(ResultSet rs) throws SQLException {
         ViajePrivado viajePrivado = new ViajePrivado();
         viajePrivado.setId(rs.getInt("viaje_id"));
+          viajePrivado.setUsuarioId(rs.getInt("usuario_id"));
+          viajePrivado.setSucursalId(rs.getInt("sucursal_id"));
          viajePrivado.setOrigen(rs.getString("origen"));
         viajePrivado.setDestino( rs.getString("destino"));
         Date fechaRetorno = rs.getDate("fecha_retorno");
