@@ -38,7 +38,7 @@ public class MantenimientoDAO {
     
     private static final String INSERTAR = """
         INSERT INTO mantenimiento
-        (bus_id, fecha, monto_mano_obra, monto_repuestos) VALUES (?, ?, ?, ?)
+        (bus_id, fecha, monto_mano_obra, monto_repuesto) VALUES (?, ?, ?, ?)
         """;
     
      private static final String LISTAR_POR_BUS = """
@@ -102,7 +102,7 @@ public class MantenimientoDAO {
                  mantenimiento.setBusId(rs.getInt("bus_id"));
                  mantenimiento.setFecha(rs.getDate("fecha").toLocalDate());
                  mantenimiento.setMontoManoObra(rs.getDouble("monto_mano_obra"));
-                 mantenimiento.setMontoRepuesto(rs.getDouble("monto_repuestos"));
+                 mantenimiento.setMontoRepuesto(rs.getDouble("monto_repuesto"));
                  mantenimientos.add(mantenimiento);
              }
          } catch (SQLException e) {

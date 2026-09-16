@@ -66,7 +66,7 @@ public class ChoferDAO {
                                                      c.foto, c.numero_licencia,  c.tipo_licencia, c.fecha_vencimiento,  c.salario_base_por_viaje,  c.estado AS chofer_estado
                                                  FROM usuario u
                                                  INNER JOIN chofer c ON u.usuario_id = c.usuario_id
-                                                 ORDER BY u.nombr
+                                                 ORDER BY u.nombre
                                          """;
     private static final String CAMBIAR_ESTADO = "UPDATE chofer SET estado = ? WHERE usuario_id = ? ";
     private static final String CAMBIAR_ESTADO_USUARIO = "UPDATE usuario SET estado = ? WHERE usuario_id = ? AND rol = 'CHOFER ' ";

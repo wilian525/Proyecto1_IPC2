@@ -45,11 +45,11 @@ public class BusDAO {
                                              """;
     
     public static final String INSERTAR = """
-                  INSERT INTO bus (sucursal_id,foto,placa,marca,modelo,año_fabricacion,capacidad,kilometraje_actual,estado)
+                  INSERT INTO bus (sucursal_id,foto,placa,marca,modelo,anio_fabricacion,capacidad,kilometraje_actual,estado)
                                           VALUES (?,?,?,?,?,?,?,?,?)
                                           """;
     public static final String ACTUALIZAR = """
-                       UPDATE bus SET sucursal_id = ?, foto = ?, placa = ?,marca = ?,modelo = ?,año_fabricacion = ?, capacidad = ?,kilometraje_actual = ?,estado = ?
+                       UPDATE bus SET sucursal_id = ?, foto = ?, placa = ?,marca = ?,modelo = ?,anio_fabricacion = ?, capacidad = ?,kilometraje_actual = ?,estado = ?
                                WHERE bus_id = ?
                                             """;
     public static final String BUSCAR_POR_ID = "SELECT * FROM bus WHERE bus_id = ? ";

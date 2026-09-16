@@ -40,7 +40,7 @@ public class RutaDAO {
                                                       )
                                               """;
    private static final String INSERTAR = "INSERT INTO ruta (origen_id, destino_id, distancia_km, precio_boleto) VALUES (?,?,?,?) ";
-    private static final String ACTUALIZAR = "UPDATE ruta SET origen_id = ? , destino = ? , distancia_km = ? , precio_boleto = ? WHERE ruta_id = ? ";
+    private static final String ACTUALIZAR = "UPDATE ruta SET origen_id = ? , destino_id = ? , distancia_km = ? , precio_boleto = ? WHERE ruta_id = ? ";
     private static final String ELIMINAR = "DELETE FROM ruta WHERE ruta_id = ? AND NOT EXISTS (SELECT 1 FROM viaje_regular WHERE viaje_regular.ruta_id = ruta.ruta_id) ";
     private static final String BUSCAR_POR_ID = "SELECT * FROM ruta WHERE ruta_id = ? ";
     private static final String LISTAR = "SELECT * FROM ruta ORDER BY ruta_id";
@@ -168,6 +168,8 @@ public class RutaDAO {
             ps =  con.prepareStatement(BUSCAR_POR_VIAJE_REGULAR);
             ps.setInt(1, viajeId);
             
+            rs = ps.executeQuery();
+            
             if (rs.next()) {
                 ruta = construirRuta(rs);
             }
@@ -206,14 +208,12 @@ public class RutaDAO {
     }
     
     private Ruta construirRuta(ResultSet rs) throws SQLException{
-        Sucursal origen = new Sucursal();
-        origen.setId(rs.getInt("origen_id"));
-
-        Sucursal destino = new Sucursal();
-        destino.setId( rs.getInt("destino_id"));
+      
+        SucursalDAO sucursalDao = new SucursalDAO(conexiondb);
+        Sucursal origen = sucursalDao.buscarPorId(rs.getInt("origen_id"));
+        Sucursal destino = sucursalDao.buscarPorId(rs.getInt("destino_id"));
 
         Ruta ruta = new Ruta();
-
         ruta.setId(rs.getInt("ruta_id"));
         ruta.setOrigen(origen);
         ruta.setDestino(destino);

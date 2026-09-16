@@ -15,7 +15,6 @@ import com.proyecto1.serviciobuses.backend.dao.BusDAO;
 import com.proyecto1.serviciobuses.backend.dao.ChoferDAO;
 import com.proyecto1.serviciobuses.backend.dao.MantenimientoDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -71,7 +70,9 @@ public class FlotaServlet extends HttpServlet {
             } else {
                 request.setAttribute("buses", listarBuses(conexiondb,usuario.getSucursalId()));
             }
+                System.out.println("ANTES DEL FORWARD - seccion: " + accion);
                 request.getRequestDispatcher("/WEB-INF/vistas/sucursal/flota.jsp").forward(request, response);
+                System.out.println("DESPUES DEL FORWARD");
         } finally {
             conexiondb.cerrar();
         }
@@ -138,8 +139,8 @@ public class FlotaServlet extends HttpServlet {
                       }
                  } else if ("mantenimiento".equals(accion)) {
                        resultado = registrarMantenimiento(request,usuario,conexiondb);
-                       response.sendRedirect(request.getContextPath() + "/FlotaServlet?resultado=" + resultado);
                  }
+                  response.sendRedirect( request.getContextPath()+ "/FlotaServlet?accion=buses&resultado="+ resultado);
         }finally {
                  conexiondb.cerrar();
         }

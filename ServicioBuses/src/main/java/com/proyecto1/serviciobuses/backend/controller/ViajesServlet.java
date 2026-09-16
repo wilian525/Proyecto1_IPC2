@@ -19,7 +19,6 @@ import com.proyecto1.serviciobuses.backend.dao.RutaDAO;
 import com.proyecto1.serviciobuses.backend.dao.SucursalDAO;
 import com.proyecto1.serviciobuses.backend.dao.ViajeDAO;
 import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -86,7 +85,7 @@ public class ViajesServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         
-        request.setCharacterEncoding("UFT-8");
+        request.setCharacterEncoding("UTF-8");
         
         Usuario usuario = servletUtil.obtenerUsuario(request);
         
@@ -138,7 +137,8 @@ public class ViajesServlet extends HttpServlet {
     
     private boolean crearRuta(HttpServletRequest request, Usuario usuario, ConexionDB conexiondb) {
          SucursalDAO sucursalDao = new SucursalDAO(conexiondb);
-         Sucursal origen = sucursalDao.buscarPorId(usuario.getSucursalId());
+       //   Sucursal origen = sucursalDao.buscarPorId(usuario.getSucursalId());
+         Sucursal origen = sucursalDao.buscarPorId(servletUtil.entero(request, "origenId"));
          Sucursal destino = sucursalDao.buscarPorId(servletUtil.entero(request, "destinoId"));
          
          if (origen == null || destino == null || origen.getId() == destino.getId()) {
@@ -147,8 +147,8 @@ public class ViajesServlet extends HttpServlet {
          Ruta ruta = new Ruta();
           ruta.setOrigen(origen);
           ruta.setDestino(destino);
-          ruta.setDistanciaKilometraje(servletUtil.decimal(request, "distancia"));
-          ruta.setPrecioBoleto(servletUtil.decimal(request, "precio"));
+          ruta.setDistanciaKilometraje(servletUtil.decimal(request, "distanciaKm"));
+          ruta.setPrecioBoleto(servletUtil.decimal(request, "precioBoleto"));
           
           return new RutaDAO(conexiondb).insertar(ruta);
     }
@@ -187,8 +187,8 @@ public class ViajesServlet extends HttpServlet {
          int rutaId = servletUtil.entero(request, "rutaId");
          
          Bus bus = new BusDAO(conexiondb).buscarPorId(busId).orElse(null);
-         Chofer chofer = new ChoferDAO(conexiondb).buscarPorId(busId).orElse(null);
-         Ruta ruta = new RutaDAO(conexiondb).buscarPorId(busId).orElse(null);
+         Chofer chofer = new ChoferDAO(conexiondb).buscarPorId(choferId).orElse(null);
+         Ruta ruta = new RutaDAO(conexiondb).buscarPorId(rutaId).orElse(null);
          
          if (bus == null || chofer == null || ruta == null || ruta.getOrigen() == null || bus.getSucursalId() != usuario.getSucursalId()  || chofer.getSucursalId() == null || chofer.getSucursalId() != usuario.getSucursalId()) {
                return false;
@@ -210,7 +210,7 @@ public class ViajesServlet extends HttpServlet {
             if (viaje == null || viaje.getBus() == null) {
                 return false;
         }
-            Bus bus = new BusDAO(conexiondb).buscarPorId(viajeId).orElse(null);
+            Bus bus = new BusDAO(conexiondb).buscarPorId(viaje.getBus().getId()).orElse(null);
             return bus != null && bus.getSucursalId() == sucursalId;
     }
     

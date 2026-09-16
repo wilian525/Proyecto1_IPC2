@@ -98,7 +98,7 @@ public class AdminSistemaServlet extends HttpServlet {
             throws ServletException, IOException {
       
         
-        request.setCharacterEncoding("UFT-8");
+        request.setCharacterEncoding("UTF-8");
         
         Usuario actual = servletUtil.obtenerUsuario(request);
         
@@ -203,14 +203,6 @@ public class AdminSistemaServlet extends HttpServlet {
 
         return new UsuarioServicio(conexiondb).actualizarPerfil(usuario);
     }
-    /**
-     * Returns a short description of the servlet.
-     *
-     * @return a String containing servlet description
-     */
-    @Override
-    public String getServletInfo() {
-        return "Short description";
-    }// </editor-fold>
+   
 
 }
