@@ -5,22 +5,24 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-      <div class="card">
-  <div class="card-header">
-    SERVICIOS DE BUSES
-  </div>
-  <div class="card-body">
-    <h5 class="card-title">servicio de buses</h5>
-    <p class="card-text">sevicio de buses y sucursales </p>
-    <a href="#" class="btn btn-primary">BIENVENIDOS</a>
-  </div>
+
+<div class="container">
+    <header class="header-buses d-flex align-items-center py-3 mb-4 border-bottom">
+
+        <a href="${pageContext.servletContext.contextPath}/index.jsp"
+           class="d-flex align-items-center me-auto text-decoration-none">
+
+            <i class="bi bi-bus-front-fill header-icon"></i>
+
+            <span class="header-title">
+                SISTEMA DE BUSES
+            </span>
+
+        </a>
+
+        <span class="header-subtitle">
+            Sistema de gestión de transporte
+        </span>
+
+    </header>
 </div>
-    </body>
-</html>

@@ -56,6 +56,14 @@
 
                 </div>
 
+                <div>
+                    <a href="${pageContext.servletContext.contextPath}/UsuarioServlet?accion=inicio"
+                       class="btn btn-secondary">
+
+                        <i class="bi bi-arrow-left"></i>
+                        Regresar
+                    </a>
+                </div>
 
 
                 <!-- ========================================================= -->
@@ -317,24 +325,22 @@
                                                                 <div class="mb-3">
 
                                                                     <label class="form-label">
-
                                                                         Sucursal de origen
-
                                                                     </label>
-
 
                                                                     <select name="origenId"
                                                                             class="form-select"
                                                                             required>
 
+                                                                        <option value="">
+                                                                            Seleccione una sucursal
+                                                                        </option>
+
                                                                         <c:forEach var="sucursal"
                                                                                    items="${sucursales}">
 
-                                                                            <option value="${sucursal.id}"
-                                                                                    ${sucursal.id == ruta.origen.id ? 'selected' : ''}>
-
+                                                                            <option value="${sucursal.id}">
                                                                                 ${sucursal.nombre}
-
                                                                             </option>
 
                                                                         </c:forEach>
@@ -349,24 +355,22 @@
                                                                 <div class="mb-3">
 
                                                                     <label class="form-label">
-
                                                                         Sucursal de destino
-
                                                                     </label>
-
 
                                                                     <select name="destinoId"
                                                                             class="form-select"
                                                                             required>
 
+                                                                        <option value="">
+                                                                            Seleccione una sucursal
+                                                                        </option>
+
                                                                         <c:forEach var="sucursal"
                                                                                    items="${sucursales}">
 
-                                                                            <option value="${sucursal.id}"
-                                                                                    ${sucursal.id == ruta.destino.id ? 'selected' : ''}>
-
+                                                                            <option value="${sucursal.id}">
                                                                                 ${sucursal.nombre}
-
                                                                             </option>
 
                                                                         </c:forEach>
@@ -381,18 +385,14 @@
                                                                 <div class="mb-3">
 
                                                                     <label class="form-label">
-
                                                                         Distancia aproximada (km)
-
                                                                     </label>
-
 
                                                                     <input type="number"
                                                                            name="distanciaKm"
                                                                            class="form-control"
                                                                            min="0"
                                                                            step="0.01"
-                                                                           value="${ruta.distanciaKilometraje}"
                                                                            required>
 
                                                                 </div>
@@ -403,46 +403,40 @@
                                                                 <div class="mb-3">
 
                                                                     <label class="form-label">
-
                                                                         Precio del boleto
-
                                                                     </label>
-
 
                                                                     <input type="number"
                                                                            name="precioBoleto"
                                                                            class="form-control"
                                                                            min="0"
                                                                            step="0.01"
-                                                                           value="${ruta.precioBoleto}"
                                                                            required>
 
                                                                 </div>
 
-                                                            </div>
+
+                                                                <div class="modal-footer">
+
+                                                                    <button type="button"
+                                                                            class="btn btn-secondary"
+                                                                            data-bs-dismiss="modal">
+
+                                                                        Cancelar
+
+                                                                    </button>
 
 
-                                                            <div class="modal-footer">
+                                                                    <button type="submit"
+                                                                            class="btn btn-primary">
 
-                                                                <button type="button"
-                                                                        class="btn btn-secondary"
-                                                                        data-bs-dismiss="modal">
+                                                                        <i class="bi bi-save"></i>
 
-                                                                    Cancelar
+                                                                        Guardar cambios
 
-                                                                </button>
+                                                                    </button>
 
-
-                                                                <button type="submit"
-                                                                        class="btn btn-primary">
-
-                                                                    <i class="bi bi-save"></i>
-
-                                                                    Guardar cambios
-
-                                                                </button>
-
-                                                            </div>
+                                                                </div>
 
 
                                                         </form>
@@ -668,7 +662,7 @@
 
 
 
-                
+
 
                 <!-- ========================================================= -->
                 <!-- SECCIÓN VIAJES -->
@@ -802,14 +796,14 @@
 
                                                     <td>
 
-                                                       ${viaje.fechaSalida} ${viaje.horaSalidaProgramada}
+                                                        ${viaje.fechaSalida} ${viaje.horaSalidaProgramada}
 
                                                     </td>
 
 
                                                     <td>
 
-                                                     ${viaje.fechaLlegadaEstimada} ${viaje.horaLlegadaEstimada}
+                                                        ${viaje.fechaLlegadaEstimada} ${viaje.horaLlegadaEstimada}
 
                                                     </td>
 

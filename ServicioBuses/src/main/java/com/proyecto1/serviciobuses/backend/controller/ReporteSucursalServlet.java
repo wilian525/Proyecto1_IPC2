@@ -103,7 +103,7 @@ public class ReporteSucursalServlet extends HttpServlet {
                  conexiondb.cerrar();
             }
         } catch (RuntimeException e) {
-            response.sendRedirect(request.getContextPath() + "/reportes/sucursal?error=true");
+           response.sendRedirect(request.getContextPath() + "/reportes/sucursal?error=true");
         }
     }
 

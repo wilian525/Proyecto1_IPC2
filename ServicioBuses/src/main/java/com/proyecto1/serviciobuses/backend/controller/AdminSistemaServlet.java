@@ -6,6 +6,7 @@ package com.proyecto1.serviciobuses.backend.controller;
 
 import com.proyecto1.serviciobuses.backend.Conexion.ConexionDB;
 import com.proyecto1.serviciobuses.backend.Model.AdministradorSucursal;
+import com.proyecto1.serviciobuses.backend.Model.Cliente;
 import com.proyecto1.serviciobuses.backend.Model.ConfiguracionDepreciacion;
 import com.proyecto1.serviciobuses.backend.Model.Sucursal;
 import com.proyecto1.serviciobuses.backend.Model.Usuario;
@@ -74,7 +75,14 @@ public class AdminSistemaServlet extends HttpServlet {
                         request.setAttribute("administradores", administradores);
                         request.setAttribute("sucursales", sucursalDao.listar());
              } else if("usuarios".equals(accion)){
-                    request.setAttribute("usuario", usuarioDao.listar());
+                  Collection<Usuario> usuarios = new ArrayList<>();
+
+                 for (Usuario usuario : usuarioDao.listar()) {
+                  if (usuario instanceof Cliente) {
+                    usuarios.add(usuario);
+                   }
+                 }
+                    request.setAttribute("usuarios", usuarios);
              } else {
                         request.setAttribute("sucursales", sucursalDao.listar());
              }

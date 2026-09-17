@@ -39,6 +39,7 @@ public class ReporteRutas {
         this.viajeDao = new ViajeDAO(conexiondb);
         this.viajeRegularDao =new ViajeRegularDAO(conexiondb );
         this.boletoDao = new BoletoDAO(conexiondb);
+        this.reporteUtil = new ReporteUtil();
     }
     
     public Collection<Ruta> rutasMasDemandadas(LocalDate fechaInicio, LocalDate fechaFin){

@@ -45,13 +45,13 @@ public class UsuarioServicio {
               return false;
         }
         
-        if (estado) {
-             return usuarioDao.cambiarEstado(usuarioId, true);
-        }
-        
         if (usuario instanceof Chofer) {
              return choferDao.cambiarEstado(usuarioId, estado);
-        }
+         }
+
+       if (estado) {
+            return usuarioDao.cambiarEstado(usuarioId, true);
+         }
         
         // siempre debe quedar un administrador de sistemas activo
         if (usuario instanceof AdministradorSistemas) {

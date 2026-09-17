@@ -47,7 +47,7 @@ public class ReporteSistemaServlet extends HttpServlet {
         
         try {
              String tipo = servletUtil.accion(request, "ganancia");
-             LocalDate fechaInicio = servletUtil.fechaOpcional(request, "fechaInico");
+             LocalDate fechaInicio = servletUtil.fechaOpcional(request, "fechaInicio");
              LocalDate fechaFin = servletUtil.fechaOpcional(request, "fechaFin");
              
              if (fechaInicio != null && fechaFin != null  && fechaFin.isBefore(fechaInicio)) {
@@ -89,7 +89,7 @@ public class ReporteSistemaServlet extends HttpServlet {
                  conexiondb.cerrar();
             }
         } catch (RuntimeException e) {
-            response.sendRedirect(request.getContextPath() + "/reportes/sistema?error=true");
+          response.sendRedirect(request.getContextPath() + "/reportes/sistema?error=true");
         }
     }
 

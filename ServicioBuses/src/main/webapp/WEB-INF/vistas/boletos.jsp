@@ -3,7 +3,7 @@
     Created on : 13 sep 2026, 10:04:55 p.m.
     Author     : wilian
 --%>
-
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
@@ -146,19 +146,16 @@
                                                         <form action="${pageContext.servletContext.contextPath}/BoletoServlet"
                                                               method="POST">
 
-                                                            <!-- Identificador del viaje -->
                                                             <input type="hidden"
                                                                    name="viajeId"
                                                                    value="${viaje.id}">
 
-                                                            <!-- ASIENTOS -->
                                                             <div class="row g-2 mb-4">
                                                                 <c:forEach begin="1"
                                                                            end="${viaje.bus.capacidad}"
                                                                            var="numeroAsiento">
                                                                     <c:set var="ocupado" value="false"/>
      
-                                                                    <!-- Verificar si el asiento ya está ocupado -->
                                                                     <c:forEach items="${asientosOcupados}"
                                                                                var="boleto">
                                                                         <c:if test="${boleto.asiento == numeroAsiento}">
@@ -169,7 +166,6 @@
                                                                     <div class="col-6 col-sm-4 col-md-3 col-lg-2">
                                                                         <c:choose>
 
-                                                                            <!-- ASIENTO OCUPADO -->
                                                                             <c:when test="${ocupado}">
                                                                                 <div class="border rounded p-2 text-center bg-secondary text-white">
                                                                                     <i class="bi bi-person-fill"></i>
@@ -182,7 +178,6 @@
                                                                                 </div>
                                                                             </c:when>
 
-                                                                            <!-- ASIENTO DISPONIBLE -->
                                                                             <c:otherwise>
 
                                                                                 <div class="form-check border rounded p-2">

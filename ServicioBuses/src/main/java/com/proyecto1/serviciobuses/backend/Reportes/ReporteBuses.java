@@ -31,7 +31,7 @@ public class ReporteBuses {
         this.viajeDao = new ViajeDAO(conexiondb);
     }
     
-    public Collection<Bus> listarBuses(int sucursalId , boolean estado){
+    public Collection<Bus> listarBuses(int sucursalId , Boolean estado){
          Collection<Bus> resultado = new ArrayList<>();
          
           if (sucursalId <= 0) {
@@ -41,7 +41,7 @@ public class ReporteBuses {
                 if (bus.getSucursalId() != sucursalId) {
                     continue;
               }
-                if ( bus.isEstado() != estado) {
+                if ( estado != null && bus.isEstado() != estado) {
                     continue;
               }
                 resultado.add(bus);

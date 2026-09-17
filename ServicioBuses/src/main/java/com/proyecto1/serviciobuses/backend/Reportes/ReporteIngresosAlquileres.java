@@ -36,6 +36,7 @@ public class ReporteIngresosAlquileres {
         this.viajePrivadoDao =new ViajePrivadoDAO( conexiondb);
         this.busDao =new BusDAO(conexiondb);
         this.usuarioDao =new UsuarioDAO(conexiondb);
+        this.reporteUtil = new ReporteUtil();
     }
 
 

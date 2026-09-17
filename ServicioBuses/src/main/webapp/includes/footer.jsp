@@ -5,13 +5,21 @@
 --%>
 
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html>
-    <head>
-        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>JSP Page</title>
-    </head>
-    <body>
-        <h1>FOOTER</h1>
-    </body>
-</html>
+
+<div class="container">
+    <footer class="footer-buses d-flex flex-wrap align-items-center justify-content-between py-3">
+
+        <div class="d-flex align-items-center">
+            <i class="bi bi-bus-front-fill footer-icon"></i>
+
+            <span>
+                SISTEMA DE BUSES
+            </span>
+        </div>
+
+        <span>
+            © 2026 Sistema de gestión de transporte
+        </span>
+
+    </footer>
+</div>

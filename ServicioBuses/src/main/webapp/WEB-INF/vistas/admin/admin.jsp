@@ -74,7 +74,161 @@
 
                 </c:if>
 
+                <div class="mb-4">
+                    <a href="${pageContext.request.contextPath}/UsuarioServlet?accion=inicio"
+                       class="btn btn-outline-secondary">
+                        <i class="bi bi-arrow-left"></i>
+                        Regresar al inicio
+                    </a>
+                </div>
+                       
+                <c:if test="${seccion == 'configuracion'}">
 
+                    <div class="card shadow-sm mb-4">
+
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                Configuración de depreciación
+                            </h4>
+                        </div>
+
+                        <div class="card-body">
+
+                            <form action="${pageContext.request.contextPath}/AdminSistemaServlet"
+                                  method="POST">
+
+                                <input type="hidden"
+                                       name="accion"
+                                       value="depreciacion">
+
+                                <div class="mb-3">
+                                    <label class="form-label">
+                                        Monto de depreciación por kilómetro
+                                    </label>
+
+                                    <input type="number"
+                                           class="form-control"
+                                           name="monto"
+                                           min="0"
+                                           step="0.01"
+                                           value="${configuracion.montoPorKilometraje}"
+                                           required>
+                                </div>
+
+                                <button type="submit" class="btn btn-primary">
+                                    Guardar configuración
+                                </button>
+
+                            </form>
+
+                        </div>
+                    </div>
+
+                </c:if>
+
+                <c:if test="${seccion == 'usuarios'}">
+
+                    <div class="card shadow-sm mb-4">
+
+                        <div class="card-header">
+                            <h4 class="mb-0">
+                                <i class="bi bi-people"></i>
+                                Gestión de usuarios
+                            </h4>
+                        </div>
+
+                        <div class="card-body">
+
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle">
+
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Usuario</th>
+                                            <th>Nombre</th>
+                                            <th>Estado</th>
+                                            <th>Acción</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        <c:forEach var="usuario" items="${usuarios}">
+
+                                            <tr>
+                                                <td>${usuario.id}</td>
+
+                                                <td>${usuario.userName}</td>
+
+                                                <td>${usuario.nombre}</td>
+
+                                                <td>
+                                                    <c:choose>
+                                                        <c:when test="${usuario.estado}">
+                                                            <span class="badge bg-success">
+                                                                Activo
+                                                            </span>
+                                                        </c:when>
+
+                                                        <c:otherwise>
+                                                            <span class="badge bg-secondary">
+                                                                Inactivo
+                                                            </span>
+                                                        </c:otherwise>
+                                                    </c:choose>
+                                                </td>
+
+                                                <td>
+                                                    <form method="POST"
+                                                          action="${pageContext.request.contextPath}/AdminSistemaServlet">
+
+                                                        <input type="hidden"
+                                                               name="accion"
+                                                               value="cambiarEstadoUsuario">
+
+                                                        <input type="hidden"
+                                                               name="usuarioId"
+                                                               value="${usuario.id}">
+
+                                                        <input type="hidden"
+                                                               name="estado"
+                                                               value="${!usuario.estado}">
+
+                                                        <button type="submit"
+                                                                class="btn btn-sm
+                                                                ${usuario.estado ? 'btn-danger' : 'btn-success'}">
+
+                                                            <c:choose>
+                                                                <c:when test="${usuario.estado}">
+                                                                    <i class="bi bi-person-x"></i>
+                                                                    Desactivar
+                                                                </c:when>
+
+                                                                <c:otherwise>
+                                                                    <i class="bi bi-person-check"></i>
+                                                                    Activar
+                                                                </c:otherwise>
+                                                            </c:choose>
+
+                                                        </button>
+
+                                                    </form>
+                                                </td>
+
+                                            </tr>
+
+                                        </c:forEach>
+
+                                    </tbody>
+
+                                </table>
+                            </div>
+
+                        </div>
+                    </div>
+
+                </c:if>
                 <!-- CREAR SUCURSAL -->
 
                 <div class="card shadow-sm mb-4">
@@ -378,30 +532,30 @@
 
                                         <tbody>
 
-                                        <c:forEach items="${sucursales}"
-                                                   var="sucursal">
+                                            <c:forEach items="${sucursales}"
+                                                       var="sucursal">
 
-                                            <tr>
+                                                <tr>
 
-                                                <td>
-                                                    ${sucursal.id}
-                                                </td>
+                                                    <td>
+                                                        ${sucursal.id}
+                                                    </td>
 
-                                                <td>
-                                                    ${sucursal.nombre}
-                                                </td>
+                                                    <td>
+                                                        ${sucursal.nombre}
+                                                    </td>
 
-                                                <td>
-                                                    ${sucursal.direccion}
-                                                </td>
+                                                    <td>
+                                                        ${sucursal.direccion}
+                                                    </td>
 
-                                                <td>
-                                                    ${sucursal.telefono}
-                                                </td>
+                                                    <td>
+                                                        ${sucursal.telefono}
+                                                    </td>
 
-                                            </tr>
+                                                </tr>
 
-                                        </c:forEach>
+                                            </c:forEach>
 
                                         </tbody>
 

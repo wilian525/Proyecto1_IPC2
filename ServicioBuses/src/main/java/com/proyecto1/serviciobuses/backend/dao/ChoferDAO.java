@@ -69,7 +69,7 @@ public class ChoferDAO {
                                                  ORDER BY u.nombre
                                          """;
     private static final String CAMBIAR_ESTADO = "UPDATE chofer SET estado = ? WHERE usuario_id = ? ";
-    private static final String CAMBIAR_ESTADO_USUARIO = "UPDATE usuario SET estado = ? WHERE usuario_id = ? AND rol = 'CHOFER ' ";
+    private static final String CAMBIAR_ESTADO_USUARIO = "UPDATE usuario SET estado = ? WHERE usuario_id = ? AND rol = 'CHOFER '";
     private static final String CAMBIAR_ESTADO_CHOFER  = "UPDATE chofer SET estado = ? WHERE usuario_id = ? ";
     private static final String INSERTAR_CARTERA = "INSERT INTO cartera_digital (usuario_id, saldo) VALUES (?,0)";
     

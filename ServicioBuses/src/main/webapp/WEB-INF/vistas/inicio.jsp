@@ -16,8 +16,10 @@
     <body>
         <main> 
             <jsp:include page="/includes/header.jsp"/>
-            
-              <!-- TÍTULO DE LA EMPRESA -->
+            <link rel="stylesheet"
+                  href="${pageContext.servletContext.contextPath}/resources/SCSS/SCSS.CSS">
+
+            <!-- TÍTULO DE LA EMPRESA -->
 
             <div class="container text-center mt-4">
                 <h1>
@@ -63,12 +65,12 @@
                     </div>
                 </c:if>
             </div>
-            
+
             <!-- OPCIONES SEGÚN EL ROL -->
-            
+
             <div class="container mt-4"> 
 
-            <c:choose>
+                <c:choose>
 
                     <c:when test="${rol == 'ADMIN_SISTEMA'}">
                         <div class="card">
@@ -84,15 +86,25 @@
                                     <i class="bi bi-people"></i>
                                     Administración
                                 </a>
-                                <a href="${pageContext.servletContext.contextPath}/reportes/sistema"
+                                <a href="${pageContext.servletContext.contextPath}/ReporteSistemaServlet"
                                    class="btn btn-secondary">
                                     <i class="bi bi-bar-chart"></i>
                                     Reportes del sistema
                                 </a>
+                                <a href="${pageContext.request.contextPath}/AdminSistemaServlet?accion=configuracion"
+                                   class="btn btn-outline-secondary">
+                                    <i class="bi bi-speedometer2"></i>
+                                    Depreciación
+                                </a>
+                                <a href="${pageContext.request.contextPath}/AdminSistemaServlet?accion=usuarios"
+                                   class="btn btn-outline-secondary">
+                                    <i class="bi bi-people"></i>
+                                    Usuarios
+                                </a>
                             </div>
                         </div>
                     </c:when>
-                   
+
 
                     <c:when test="${rol == 'ADMIN_SUCURSAL'}">
 
@@ -127,9 +139,9 @@
                             </div>
                         </div>
                     </c:when>
-                    
-                
-        
+
+
+
                     <c:otherwise>
                         <div class="card">
                             <div class="card-header">
@@ -156,6 +168,6 @@
                 </c:choose>
             </div>
             <jsp:include page="/includes/footer.jsp"/>
-            </main> 
+        </main> 
     </body>
 </html>
