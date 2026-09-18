@@ -73,7 +73,7 @@
                                         Tipo de reporte
                                     </label>
 
-                                    <select name="tipo"
+                                    <select name="accion"
                                             class="form-select"
                                             required>
 
@@ -205,6 +205,16 @@
 
                                     <i class="bi bi-search"></i>
                                     Generar reporte
+
+                                </button>
+
+                                <button type="submit"
+                                        name="exportar"
+                                        value="true"
+                                        class="btn btn-success ms-2">
+
+                                    <i class="bi bi-file-earmark-code"></i>
+                                    Exportar HTML
 
                                 </button>
 

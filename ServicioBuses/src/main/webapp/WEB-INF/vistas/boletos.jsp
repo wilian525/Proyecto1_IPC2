@@ -27,6 +27,22 @@
                     </p>
                 </div>
 
+                <c:if test="${param.resultado == 'true'}">
+                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                        <i class="bi bi-check-circle"></i>
+                        ¡Compra de boleto realizada correctamente!
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </c:if>
+
+                <c:if test="${param.resultado == 'false'}">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        No se pudo realizar la compra. Verifique su saldo, disponibilidad de asientos y capacidad del viaje.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                </c:if>
+
                 <div class="mb-4">
                     <h3>
                         <i class="bi bi-bus-front"></i>
@@ -155,7 +171,7 @@
                                                                            end="${viaje.bus.capacidad}"
                                                                            var="numeroAsiento">
                                                                     <c:set var="ocupado" value="false"/>
-     
+
                                                                     <c:forEach items="${asientosOcupados}"
                                                                                var="boleto">
                                                                         <c:if test="${boleto.asiento == numeroAsiento}">

@@ -94,7 +94,7 @@
                                     Tipo de reporte
                                 </label>
 
-                                <select name="tipo"
+                                <select name="accion"
                                         class="form-select"
                                         required>
 
@@ -213,6 +213,17 @@
                             <i class="bi bi-search"></i>
 
                             Generar reporte
+
+                        </button>
+
+                        <button type="submit"
+                                name="exportar"
+                                value="true"
+                                class="btn btn-success ms-2">
+
+                            <i class="bi bi-file-earmark-code"></i>
+
+                            Exportar HTML
 
                         </button>
 
@@ -693,7 +704,7 @@
                               class="row g-3 mb-4">
 
                             <input type="hidden"
-                                   name="tipo"
+                                   name="accion"
                                    value="mapa">
 
                             <div class="col-md-8">
@@ -856,53 +867,67 @@
                      */
                     const coordenadasSucursales = {
 
-                    1: {
-                    nombre: "Zona 10",
+                        1: {
+                            nombre: "Zona 10",
                             lat: 14.5995,
-                            lng: - 90.5133
-                    },
-                            2: {
+                            lng: -90.5133
+                        },
+
+                        2: {
                             nombre: "zona 18",
-                                    lat: 14.8680,
-                                    lng: - 91.5180
-                            },
-                            3: {
+                            lat: 14.8680,
+                            lng: -90.5180
+                        },
+
+                        3: {
                             nombre: "zona 21",
-                                    lat: 16.9120,
-                                    lng: - 89.8950
-                            },
-                            4: {
+                            lat: 14.5380,
+                            lng: -90.5500
+                        },
+
+                        4: {
                             nombre: "Zona 1",
-                                    lat: 14.6611,
-                                    lng: - 90.8195
-                            },
-                            6: {
+                            lat: 14.6349,
+                            lng: -90.5069
+                        },
+
+                        6: {
                             nombre: "Zona 24",
-                                    lat: 14.6800,
-                                    lng: - 90.4700
-                            },
-                            7: {
+                            lat: 14.6800,
+                            lng: -90.4700
+                        },
+
+                        7: {
                             nombre: "zona 2",
-                                    lat: 15.4700,
-                                    lng: - 90.3700
-                            },
-                            8: {
+                            lat: 14.6450,
+                            lng: -90.5100
+                        },
+
+                        8: {
                             nombre: "zona 6",
-                                    lat: 14.5580,
-                                    lng: - 90.7330
-                            },
-                            9: {
+                            lat: 14.6500,
+                            lng: -90.5000
+                        },
+
+                        9: {
                             nombre: "zona 7",
-                                    lat: 15.3200,
-                                    lng: - 91.1500
-                            }
+                            lat: 14.6500,
+                            lng: -90.5500
+                        },
+
+                        12: {
+                            nombre: "Zona 13",
+                            lat: 14.5830,
+                            lng: -90.5230
+                        }
 
                     };
+
                     /*
                      * Crear mapa.
                      */
                     const mapa = L.map('mapaRutas').setView(
-                    [14.6349, - 90.5069],
+                            [14.6349, -90.5069],
                             7
                             );
                     /*
@@ -910,10 +935,10 @@
                      */
                     L.tileLayer(
                             'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    {
-                    maxZoom: 19,
-                            attribution: '&copy; OpenStreetMap contributors'
-                    }
+                            {
+                                maxZoom: 19,
+                                attribution: '&copy; OpenStreetMap contributors'
+                            }
                     ).addTo(mapa);
                     /*
                      * Datos enviados por el backend.
@@ -925,11 +950,11 @@
                                varStatus="status">
 
                     {
-        id: ${ruta.id},
+                    id: ${ruta.id},
                             origenId: ${ruta.origen.id},
                             destinoId: ${ruta.destino.id},
                             origenNombre: "${ruta.origen.nombre}",
-                            destinoNombre: "${ruta.destino.nombre}",
+                    destinoNombre: "${ruta.destino.nombre}",
                             distancia: ${ruta.distanciaKilometraje},
                             precio: ${ruta.precioBoleto}
                     }
@@ -945,78 +970,78 @@
                      * Dibujar cada ruta.
                      */
                     const limites = [];
-                    rutas.forEach(function(ruta) {
+                    rutas.forEach(function (ruta) {
 
-                    const origen =
-                            coordenadasSucursales[ruta.origenId];
-                    const destino =
-                            coordenadasSucursales[ruta.destinoId];
-                    if (!origen || !destino) {
-                    return;
-                    }
+                        const origen =
+                                coordenadasSucursales[ruta.origenId];
+                        const destino =
+                                coordenadasSucursales[ruta.destinoId];
+                        if (!origen || !destino) {
+                            return;
+                        }
 
 
-                    /*
-                     * Marcador del origen.
-                     */
-                    L.marker([
+                        /*
+                         * Marcador del origen.
+                         */
+                        L.marker([
                             origen.lat,
                             origen.lng
-                    ])
-                            .addTo(mapa)
-                            .bindPopup(
-                                    "<strong>" +
-                                    ruta.origenNombre +
-                                    "</strong><br>" +
-                                    "Origen de la ruta"
-                                    );
-                    /*
-                     * Marcador del destino.
-                     */
-                    L.marker([
+                        ])
+                                .addTo(mapa)
+                                .bindPopup(
+                                        "<strong>" +
+                                        ruta.origenNombre +
+                                        "</strong><br>" +
+                                        "Origen de la ruta"
+                                        );
+                        /*
+                         * Marcador del destino.
+                         */
+                        L.marker([
                             destino.lat,
                             destino.lng
-                    ])
-                            .addTo(mapa)
-                            .bindPopup(
-                                    "<strong>" +
-                                    ruta.destinoNombre +
-                                    "</strong><br>" +
-                                    "Destino"
-                                    );
-                    /*
-                     * Línea que representa la ruta.
-                     */
-                    const linea = L.polyline(
-                    [
-                    [origen.lat, origen.lng],
-                    [destino.lat, destino.lng]
-                    ]
-                            ).addTo(mapa);
-                    /*
-                     * Información al hacer clic
-                     * sobre la ruta.
-                     */
-                    linea.bindPopup(
-                            "<strong>" +
-                            ruta.origenNombre +
-                            " → " +
-                            ruta.destinoNombre +
-                            "</strong><br><br>" +
-                            "Distancia: " +
-                            ruta.distancia +
-                            " km<br>" +
-                            "Precio boleto: Q " +
-                            ruta.precio
-                            );
-                    limites.push([
+                        ])
+                                .addTo(mapa)
+                                .bindPopup(
+                                        "<strong>" +
+                                        ruta.destinoNombre +
+                                        "</strong><br>" +
+                                        "Destino"
+                                        );
+                        /*
+                         * Línea que representa la ruta.
+                         */
+                        const linea = L.polyline(
+                                [
+                                    [origen.lat, origen.lng],
+                                    [destino.lat, destino.lng]
+                                ]
+                                ).addTo(mapa);
+                        /*
+                         * Información al hacer clic
+                         * sobre la ruta.
+                         */
+                        linea.bindPopup(
+                                "<strong>" +
+                                ruta.origenNombre +
+                                " → " +
+                                ruta.destinoNombre +
+                                "</strong><br><br>" +
+                                "Distancia: " +
+                                ruta.distancia +
+                                " km<br>" +
+                                "Precio boleto: Q " +
+                                ruta.precio
+                                );
+                        limites.push([
                             origen.lat,
                             origen.lng
-                    ]);
-                    limites.push([
+                        ]);
+                        limites.push([
                             destino.lat,
                             destino.lng
-                    ]);
+                        ]);
                     });
                     /*
                      * Ajustar el mapa para mostrar
@@ -1024,9 +1049,9 @@
                      */
                     if (limites.length > 0) {
 
-                    mapa.fitBounds(limites, {
-                    padding: [40, 40]
-                    });
+                        mapa.fitBounds(limites, {
+                            padding: [40, 40]
+                        });
                     }
 
                 </script>

@@ -750,6 +750,12 @@
 
                                                 <th>Llegada estimada</th>
 
+                                                <th>Kilometraje inicial</th>
+
+                                                <th>Kilometraje final</th>
+
+                                                <th>Combustible</th>
+
                                                 <th>Acciones</th>
 
                                             </tr>
@@ -805,6 +811,20 @@
 
                                                         ${viaje.fechaLlegadaEstimada} ${viaje.horaLlegadaEstimada}
 
+                                                    </td>
+
+                                                    <td>
+                                                        ${viaje.kilometrajeInicial}
+                                                    </td>
+
+
+                                                    <td>
+                                                        ${viaje.kilometrajeFinal}
+                                                    </td>
+
+
+                                                    <td>
+                                                        Q${viaje.gastoCombustible}
                                                     </td>
 
 

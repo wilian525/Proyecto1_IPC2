@@ -30,6 +30,7 @@ public class ReporteCosto {
         this.busDao =new BusDAO(conexiondb);
         this.viajeDao =new ViajeDAO(conexiondb);
         this.mantenimientoDao = new MantenimientoDAO(conexiondb);
+         this.reporteUtil = new ReporteUtil();
     }
      
      public Collection<Viaje> listarViajes(int sucursalId, LocalDate fechaInicio,LocalDate fechaFin){

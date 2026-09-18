@@ -54,7 +54,7 @@
                          role="alert">
 
                         <i class="bi bi-exclamation-triangle"></i>
-                        No fue posible realizar la operación.
+                        No fue posible realizar la operación revise que cuente con saldo disponible.
 
                         <button type="button"
                                 class="btn-close"

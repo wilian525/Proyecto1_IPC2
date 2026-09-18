@@ -55,7 +55,7 @@ public class ReporteRutas {
             
             // ordenamos de mayor a menor
             for (int i = 0; i < rutas.size() - 1; i++) {
-                for (int j = 0; j < rutas.size(); j++) {
+                for (int j = 0; j + 1< rutas.size(); j++) {
                     
                     if (totales.get(j) > totales.get(i)) {
                          Ruta rutaTemporal = rutas.get(i);

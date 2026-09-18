@@ -27,122 +27,123 @@ import java.util.Optional;
  * @author wilian
  */
 public class ReporteIngresoBoletos {
-    
-   private ViajeDAO viajeDao;
+
+    private ViajeDAO viajeDao;
     private ViajeRegularDAO viajeRegularDao;
     private BoletoDAO boletoDao;
     private BusDAO busDao;
     private RutaDAO rutaDao;
     private SucursalDAO sucursalDao;
     private ReporteUtil reporteUtil;
-    
-     public ReporteIngresoBoletos(ConexionDB conexiondb) {
-        this.viajeDao =new ViajeDAO(conexiondb);
-        this.viajeRegularDao =new ViajeRegularDAO(conexiondb);
-        this.boletoDao =new BoletoDAO(conexiondb);
+
+    public ReporteIngresoBoletos(ConexionDB conexiondb) {
+        this.viajeDao = new ViajeDAO(conexiondb);
+        this.viajeRegularDao = new ViajeRegularDAO(conexiondb);
+        this.boletoDao = new BoletoDAO(conexiondb);
         this.busDao = new BusDAO(conexiondb);
-        this.rutaDao =new RutaDAO(conexiondb);
-        this.sucursalDao =new SucursalDAO(conexiondb);
+        this.rutaDao = new RutaDAO(conexiondb);
+        this.sucursalDao = new SucursalDAO(conexiondb);
+        this.reporteUtil = new ReporteUtil();
     }
-     
-     public Collection<Viaje> listarViajes(int sucursalId, LocalDate fechaInicio, LocalDate fechaFin, Integer rutaId, Integer busId){
-            Collection<Viaje> resultado = new ArrayList<>();
-     
-            for(Viaje viaje: viajeDao.listar()){
-                        if (viaje.getBus() == null) {
-                                continue;
-                }
-                        Bus bus = busDao.buscarPorId(viaje.getBus().getId()).orElse(null);
-                        
-                        if (bus == null ||  bus.getSucursalId() != null) {
-                                continue;
-                }
-                        if (busId != null && bus.getId() != busId) {
-                                continue;
-                }
-                        Optional<ViajeRegular> regular = viajeRegularDao.buscarPorViaje(viaje.getId());
-                        
-                        if (regular.isEmpty() || regular.get().getRuta() == null) {
-                                  continue;
-                }
-                        int idRuta = regular.get().getRuta().getId();
-                        
-                        if (rutaId != null && idRuta != rutaId) {
-                            continue;
-                }
-                        if (cantidadBoletos(viaje.getId(), fechaInicio, fechaFin) == 0) {
-                              continue;
-                }
-                        viaje.setBus(bus);
-                        resultado.add(viaje);
+
+    public Collection<Viaje> listarViajes(int sucursalId, LocalDate fechaInicio, LocalDate fechaFin, Integer rutaId, Integer busId) {
+        Collection<Viaje> resultado = new ArrayList<>();
+
+        for (Viaje viaje : viajeDao.listar()) {
+            if (viaje.getBus() == null) {
+                continue;
             }
-            return resultado;
-     }
-     
-     public Collection<Boleto> boletosVendidos(int viajeId, LocalDate fechaInicio, LocalDate fechaFin){
-            Collection<Boleto> resultado = new ArrayList<>();
-     
-            for(Boleto boleto : boletoDao.buscarPorViaje(viajeId)){
-                    
-                if (reporteUtil.fechaEnRango(fechaFin, fechaInicio, fechaFin)) {
-                         resultado.add(boleto);
-                }
+            Bus bus = busDao.buscarPorId(viaje.getBus().getId()).orElse(null);
+
+            if (bus == null || bus.getSucursalId() != sucursalId) {
+                continue;
             }
-            return resultado;
-     }
-     
-     public int cantidadBoletos(int viajeId, LocalDate fechaInicio , LocalDate fechaFin){
-            return boletosVendidos(viajeId, fechaInicio,fechaFin).size();
-     }
-     
-     public double ingresoTotal(int viajeId, LocalDate fechaInicio, LocalDate fechaFin){
-            double total = 0;
-            
-            for(Boleto boleto : boletosVendidos(viajeId,fechaInicio,fechaFin)){
-                     total += boleto.getPrecio();
+            if (busId != null && bus.getId() != busId) {
+                continue;
             }
-                return total;
-     }
-     
-     public double ingresoTotalSucursal(int sucursalId , LocalDate fechaInicio, LocalDate fechaFin){
-            double total = 0;
-            
-            for(Viaje viaje : listarViajes(sucursalId, fechaInicio,fechaFin,null,null)){
-                    total += ingresoTotal(viaje.getId(),fechaInicio,fechaFin);
-            }
-            return total;
-     }
-     
-     public Ruta obtenerRuta(int viajeId){
-            Optional<ViajeRegular> regular = viajeRegularDao.buscarPorViaje(viajeId);
-            
+            Optional<ViajeRegular> regular = viajeRegularDao.buscarPorViaje(viaje.getId());
+
             if (regular.isEmpty() || regular.get().getRuta() == null) {
-                    return null;
-         }
-            Ruta ruta = rutaDao.buscarPorId(regular.get().getRuta().getId()).orElse(null);
-            
-            if (ruta == null ) {
-              return null;
-         }
-            completarSucursales(ruta);
-            return ruta;
-     }
-     
-     private void completarSucursales(Ruta ruta){
-          if (ruta.getOrigen() != null) {
-                Sucursal origen = sucursalDao.buscarPorId(ruta.getOrigen().getId());
-                
-                if (origen != null) {
-                    ruta.setOrigen(origen);
-              }
-         }
-          
-          if (ruta.getDestino() != null) {
-                Sucursal destino = sucursalDao.buscarPorId(ruta.getDestino().getId());
-                
-                if (destino != null) {
-                        ruta.setDestino(destino);
-              }
-         }
-     }
+                continue;
+            }
+            int idRuta = regular.get().getRuta().getId();
+
+            if (rutaId != null && idRuta != rutaId) {
+                continue;
+            }
+            if (cantidadBoletos(viaje.getId(), fechaInicio, fechaFin) == 0) {
+                continue;
+            }
+            viaje.setBus(bus);
+            resultado.add(viaje);
+        }
+        return resultado;
+    }
+
+    public Collection<Boleto> boletosVendidos(int viajeId, LocalDate fechaInicio, LocalDate fechaFin) {
+        Collection<Boleto> resultado = new ArrayList<>();
+
+        for (Boleto boleto : boletoDao.buscarPorViaje(viajeId)) {
+
+            if (reporteUtil.fechaEnRango(fechaFin, fechaInicio, fechaFin)) {
+                resultado.add(boleto);
+            }
+        }
+        return resultado;
+    }
+
+    public int cantidadBoletos(int viajeId, LocalDate fechaInicio, LocalDate fechaFin) {
+        return boletosVendidos(viajeId, fechaInicio, fechaFin).size();
+    }
+
+    public double ingresoTotal(int viajeId, LocalDate fechaInicio, LocalDate fechaFin) {
+        double total = 0;
+
+        for (Boleto boleto : boletosVendidos(viajeId, fechaInicio, fechaFin)) {
+            total += boleto.getPrecio();
+        }
+        return total;
+    }
+
+    public double ingresoTotalSucursal(int sucursalId, LocalDate fechaInicio, LocalDate fechaFin) {
+        double total = 0;
+
+        for (Viaje viaje : listarViajes(sucursalId, fechaInicio, fechaFin, null, null)) {
+            total += ingresoTotal(viaje.getId(), fechaInicio, fechaFin);
+        }
+        return total;
+    }
+
+    public Ruta obtenerRuta(int viajeId) {
+        Optional<ViajeRegular> regular = viajeRegularDao.buscarPorViaje(viajeId);
+
+        if (regular.isEmpty() || regular.get().getRuta() == null) {
+            return null;
+        }
+        Ruta ruta = rutaDao.buscarPorId(regular.get().getRuta().getId()).orElse(null);
+
+        if (ruta == null) {
+            return null;
+        }
+        completarSucursales(ruta);
+        return ruta;
+    }
+
+    private void completarSucursales(Ruta ruta) {
+        if (ruta.getOrigen() != null) {
+            Sucursal origen = sucursalDao.buscarPorId(ruta.getOrigen().getId());
+
+            if (origen != null) {
+                ruta.setOrigen(origen);
+            }
+        }
+
+        if (ruta.getDestino() != null) {
+            Sucursal destino = sucursalDao.buscarPorId(ruta.getDestino().getId());
+
+            if (destino != null) {
+                ruta.setDestino(destino);
+            }
+        }
+    }
 }
