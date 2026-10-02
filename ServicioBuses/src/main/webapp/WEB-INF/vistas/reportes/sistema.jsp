@@ -859,12 +859,7 @@
 
                 <script>
 
-                    /*
-                     * Coordenadas aproximadas de las localidades indicadas
-                     * en las direcciones de las sucursales de la BD.
-                     *
-                     * El ID corresponde al sucursal_id.
-                     */
+                    
                     const coordenadasSucursales = {
 
                         1: {
